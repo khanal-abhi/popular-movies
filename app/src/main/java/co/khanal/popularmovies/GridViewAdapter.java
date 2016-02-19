@@ -14,13 +14,13 @@ import com.squareup.picasso.Picasso;
 /**
  * Created by abhi on 2/18/16.
  */
-public class GridViewAdapter extends ArrayAdapter<MainActivityFragment.Movie> {
+public class GridViewAdapter extends ArrayAdapter<Movie> {
 
     Context appContext = null;
     int layoutId;
-    MainActivityFragment.Movie[] movies;
+    Movie[] movies;
 
-    public GridViewAdapter(Context context, int resource, MainActivityFragment.Movie[] objects) {
+    public GridViewAdapter(Context context, int resource, Movie[] objects) {
         super(context, resource, objects);
         appContext = context;
         layoutId = resource;
@@ -44,7 +44,7 @@ public class GridViewAdapter extends ArrayAdapter<MainActivityFragment.Movie> {
             grid_item.setTag(placeHolder);
         }
 
-        MainActivityFragment.Movie movie = movies[position];
+        Movie movie = movies[position];
 
         Picasso.with(appContext).load(movie.getImageUri()).into(placeHolder.imageView);
 

@@ -1,6 +1,7 @@
 package co.khanal.popularmovies;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,39 +9,36 @@ import android.os.Parcelable;
  * Created by abhi on 2/18/16.
  */
 public class Movie implements Parcelable{
+
+    private static final String TITLE = "title";
+    private static final String IMAGE_URI = "image_uri";
+    private static final String SYNOPSIS = "synopsis";
+    private static final String USER_RATING = "user_rating";
+    private static final String RELEASE_DATE = "release_date";
+
+    public static final String MOVIE_KEY = "movie";
+
     private String originalTitle;
     private Uri imageUri;
     private String synopsis;
     private double userRating;
     private String releaseDate;
 
-    protected Movie(Parcel in) {
-        originalTitle = in.readString();
-        imageUri = in.readParcelable(Uri.class.getClassLoader());
-        synopsis = in.readString();
-        userRating = in.readDouble();
-        releaseDate = in.readString();
-    }
-
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel in) {
-//
-//            dest.writeString(originalTitle);
-//            dest.writeString(imageUri.toString());
-//            dest.writeString(synopsis);
-//            dest.writeDouble(userRating);
-//            dest.writeString(releaseDate);
+
+            Bundle bundle = in.readBundle();
+
+            return new Movie(
+                    bundle.getString(TITLE),
+                    bundle.getString(IMAGE_URI),
+                    bundle.getString(SYNOPSIS),
+                    bundle.getDouble(USER_RATING),
+                    bundle.getString(RELEASE_DATE)
+            );
 
 
-            Movie movie = new Movie();
-            movie.setOriginalTitle(in.readString());
-            movie.setImageUri(in.readString());
-            movie.setSynopsis(in.readString());
-            movie.setUserRating(in.readDouble());
-            movie.setReleaseDate(in.readString());
-
-            return movie;
         }
 
         @Override
@@ -101,6 +99,14 @@ public class Movie implements Parcelable{
         this.releaseDate = releaseDate;
     }
 
+    public Movie(String originalTitle, String imageUri, String synopsis, double userRating, String releaseDate) {
+        this.originalTitle = originalTitle;
+        this.imageUri = Uri.parse(imageUri);
+        this.synopsis = synopsis;
+        this.userRating = userRating;
+        this.releaseDate = releaseDate;
+    }
+
     public Movie(){
 
     }
@@ -118,11 +124,14 @@ public class Movie implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeString(originalTitle);
-        dest.writeString(imageUri.toString());
-        dest.writeString(synopsis);
-        dest.writeDouble(userRating);
-        dest.writeString(releaseDate);
+        Bundle bundle = new Bundle();
+        bundle.putString(TITLE, originalTitle);
+        bundle.putString(IMAGE_URI, imageUri.toString());
+        bundle.putString(SYNOPSIS, synopsis);
+        bundle.putDouble(USER_RATING, userRating);
+        bundle.putString(RELEASE_DATE, releaseDate);
+
+        dest.writeBundle(bundle);
 
     }
 

@@ -3,9 +3,9 @@ package co.khanal.popularmovies;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,8 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -88,7 +86,8 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.putExtra("Movie", parent.getAdapter().getItemId(position));
+                Movie movie = (Movie) parent.getAdapter().getItem(position);
+                intent.putExtra(Movie.MOVIE_KEY, movie);
                 startActivity(intent);
             }
         });
@@ -205,72 +204,5 @@ public class MainActivityFragment extends Fragment {
         return movies;
     }
 
-    public class Movie {
-        private String originalTitle;
-        private Uri imageUri;
-        private String synopsis;
-        private double userRating;
-        private String releaseDate;
 
-        public String getOriginalTitle() {
-            return originalTitle;
-        }
-
-        public void setOriginalTitle(String originalTitle) {
-            this.originalTitle = originalTitle;
-        }
-
-        public Uri getImageUri() {
-            return imageUri;
-        }
-
-        public void setImageUri(String imageUri) {
-            this.imageUri = Uri.parse(imageUri);
-        }
-
-        public void setImageUri(Uri uri){
-            this.imageUri = uri;
-        }
-
-        public String getSynopsis() {
-            return synopsis;
-        }
-
-        public void setSynopsis(String synopsis) {
-            this.synopsis = synopsis;
-        }
-
-        public double getUserRating() {
-            return userRating;
-        }
-
-        public void setUserRating(double userRating) {
-            this.userRating = userRating;
-        }
-
-        public String getReleaseDate() {
-            return releaseDate;
-        }
-
-        public void setReleaseDate(String releaseDate) {
-            this.releaseDate = releaseDate;
-        }
-
-        public Movie(String originalTitle, Uri imageUri, String synopsis, double userRating, String releaseDate) {
-            this.originalTitle = originalTitle;
-            this.imageUri = imageUri;
-            this.synopsis = synopsis;
-            this.userRating = userRating;
-            this.releaseDate = releaseDate;
-        }
-
-        public Movie(){
-
-        }
-
-        @Override
-        public String toString() {
-            return new String("title:" + originalTitle + " release date:" + releaseDate);
-        }
-    }
 }

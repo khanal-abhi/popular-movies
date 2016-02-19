@@ -2,16 +2,23 @@ package co.khanal.popularmovies;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.text.DecimalFormat;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class DetailActivityFragment extends Fragment {
+
+    private final String PERSON_KEY = "person";
 
     TextView movieTitle, movieYear, movieLength, movieRating, synapsis;
     ImageView poster;
@@ -23,6 +30,7 @@ public class DetailActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
         movieTitle = (TextView) rootView.findViewById(R.id.movie_title);
         movieYear = (TextView) rootView.findViewById(R.id.movie_year);
         movieLength = (TextView) rootView.findViewById(R.id.movie_length);
@@ -31,8 +39,18 @@ public class DetailActivityFragment extends Fragment {
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
 
-        //Movie moview = getActivity().getIntent().getExtras().get
+        Movie movie = (Movie) getActivity().getIntent().getExtras().getParcelable(Movie.MOVIE_KEY);
+        Log.v("TAG", movie.toString());
 
+        DecimalFormat df = new DecimalFormat("00.0");
+
+        Picasso.with(getContext()).load(movie.getImageUri()).into(poster);
+        movieTitle.setText(movie.getOriginalTitle());
+        String releaseYear = movie.getReleaseDate();
+        releaseYear = releaseYear.substring(0,4);
+        movieYear.setText(releaseYear);
+        movieRating.setText(String.valueOf(df.format(movie.getUserRating())) +"/10");
+        synapsis.setText(movie.getSynopsis());
 
         return rootView;
     }
