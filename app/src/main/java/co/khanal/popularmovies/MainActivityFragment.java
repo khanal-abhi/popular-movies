@@ -1,9 +1,12 @@
 package co.khanal.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -33,8 +36,8 @@ import java.net.URL;
  */
 public class MainActivityFragment extends Fragment {
 
-    public static final int SORT_ORDER = 1;
-
+    public static final String GRID_VIEW_FIRST_VISIBLE_ITEM = "grid_view_first_visible_item";
+    private static final String GRID_VIEW_STATE = "grid_view_state";
 
     private GridView gridView;
 
@@ -45,6 +48,8 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+
     }
 
     @Override
@@ -55,22 +60,47 @@ public class MainActivityFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_settings){
-            showSettings();
+        switch (id){
+            case R.id.action_settings:
+                break;
+
+            case R.id.ratings:
+                sortByRatings();
+                break;
+
+            case R.id.popularity:
+                sortByPopular();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void showSettings(){
-        Intent intent = new Intent(getContext(), SettingsActivity.class);
-        startActivityForResult(intent, SORT_ORDER);
+
+    private void sortByPopular(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentOrder = pref.getString(getString(R.string.pref_sort_by_key), "");
+        if(currentOrder.contentEquals(getString(R.string.most_popular))){
+            return;
+        }
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(getString(R.string.pref_sort_by_key), getString(R.string.most_popular));
+        editor.commit();
+        setupLoad();
+        return;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void sortByRatings(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentOrder = pref.getString(getString(R.string.pref_sort_by_key), "");
+        if(currentOrder.contentEquals(getString(R.string.highest_rated))){
+            return;
+        }
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(getString(R.string.pref_sort_by_key), getString(R.string.highest_rated));
+        editor.commit();
         setupLoad();
+        return;
     }
 
     @Override
@@ -80,7 +110,18 @@ public class MainActivityFragment extends Fragment {
 
         gridView = (GridView) rootView.findViewById(R.id.main_fragment_gridview);
 
-        setupLoad();
+        if(savedInstanceState != null){
+            gridView.onRestoreInstanceState(savedInstanceState.getParcelable(GRID_VIEW_STATE));
+            Log.v(GRID_VIEW_STATE, String.valueOf(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM)));
+
+//            if(parcelable != null){
+//                gridView.onRestoreInstanceState(parcelable);
+////                gridView.smoothScrollToPosition(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM));
+////                gridView.setSelection(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM));
+//
+//            }
+        }
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -92,8 +133,12 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+        setupLoad();
+
         return rootView;
     }
+
+
 
     private void setupLoad(){
         final String SORT_METHOD = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(getString(R.string.pref_sort_by_key), getString(R.string.pref_sort_by_default_value));
@@ -116,6 +161,21 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        Parcelable parcelable = gridView.onSaveInstanceState();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(GRID_VIEW_STATE, parcelable);
+        bundle.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, gridView.getFirstVisiblePosition());
+        Log.v(GRID_VIEW_STATE, String.valueOf(gridView.getFirstVisiblePosition()));
+        onSaveInstanceState(bundle);
+        super.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     public class LoadDataFromApi extends AsyncTask<String, Void, Movie[]>{
 
@@ -198,7 +258,7 @@ public class MainActivityFragment extends Fragment {
             movies[i].setImageUri("http://image.tmdb.org/t/p/w185/" + moviesArray.getJSONObject(i).getString("poster_path"));
             movies[i].setSynopsis(moviesArray.getJSONObject(i).getString("overview"));
             movies[i].setReleaseDate(moviesArray.getJSONObject(i).getString("release_date"));
-            movies[i].setUserRating(moviesArray.getJSONObject(i).getDouble("popularity"));
+            movies[i].setUserRating(moviesArray.getJSONObject(i).getDouble("vote_average"));
         }
 
         return movies;

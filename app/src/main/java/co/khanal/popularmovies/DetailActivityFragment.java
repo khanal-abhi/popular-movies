@@ -1,5 +1,7 @@
 package co.khanal.popularmovies;
 
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,7 +35,6 @@ public class DetailActivityFragment extends Fragment {
 
         movieTitle = (TextView) rootView.findViewById(R.id.movie_title);
         movieYear = (TextView) rootView.findViewById(R.id.movie_year);
-        movieLength = (TextView) rootView.findViewById(R.id.movie_length);
         movieRating = (TextView) rootView.findViewById(R.id.movie_rating);
         synapsis = (TextView) rootView.findViewById(R.id.synapsis);
 
@@ -42,9 +43,8 @@ public class DetailActivityFragment extends Fragment {
         Movie movie = (Movie) getActivity().getIntent().getExtras().getParcelable(Movie.MOVIE_KEY);
         Log.v("TAG", movie.toString());
 
-        DecimalFormat df = new DecimalFormat("00.0");
-
-        Picasso.with(getContext()).load(movie.getImageUri()).into(poster);
+        DecimalFormat df = new DecimalFormat("0.0");
+//        Picasso.with(getContext()).load(movie.getImageUri()).into(poster);
         movieTitle.setText(movie.getOriginalTitle());
         String releaseYear = movie.getReleaseDate();
         releaseYear = releaseYear.substring(0,4);
@@ -52,6 +52,21 @@ public class DetailActivityFragment extends Fragment {
         movieRating.setText(String.valueOf(df.format(movie.getUserRating())) +"/10");
         synapsis.setText(movie.getSynopsis());
 
+        new PosterLoader().execute(movie);
+
         return rootView;
+    }
+
+    public class PosterLoader extends AsyncTask<Movie, Void, Uri>{
+
+        @Override
+        protected Uri doInBackground(Movie... params) {
+            return params[0].getImageUri();
+        }
+
+        @Override
+        protected void onPostExecute(Uri uri) {
+            Picasso.with(getContext()).load(uri).into(poster);
+        }
     }
 }

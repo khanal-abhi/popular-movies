@@ -1,6 +1,7 @@
 <resources>
 
     <string name="settings_screen_title">Settings</string>
+    <string name="details_screen_title">Movie Details</string>
     <string name="app_name">Pop Movies</string>
     <string name="action_settings">Settings</string>
 

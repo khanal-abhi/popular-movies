@@ -3,6 +3,7 @@ package co.khanal.popularmovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.zip.Inflater;
 
 /**
  * Created by abhi on 2/18/16.
@@ -25,11 +28,16 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
         appContext = context;
         layoutId = resource;
         movies = objects;
+
+
+
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         View grid_item = convertView;
+
         PlaceHolder placeHolder;
 
         if(grid_item != null){
@@ -44,8 +52,13 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
             grid_item.setTag(placeHolder);
         }
 
-        Movie movie = movies[position];
+        float w = parent.getWidth()/ 2;
+        float h = (277f * w)  /185f;
 
+        placeHolder.imageView.setMinimumWidth((int)w);
+        placeHolder.imageView.setMinimumHeight((int)h);
+
+        Movie movie = movies[position];
         Picasso.with(appContext).load(movie.getImageUri()).into(placeHolder.imageView);
 
 
