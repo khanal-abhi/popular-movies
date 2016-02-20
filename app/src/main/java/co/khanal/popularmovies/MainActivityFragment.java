@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-
+import android.widget.Toast;
 
 
 /**
@@ -30,12 +30,40 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
     public static final String GRID_VIEW_FIRST_VISIBLE_ITEM = "grid_view_first_visible_item";
     private static final String GRID_VIEW_STATE = "grid_view_state";
     public static final String CLICKED = "clicked";
+    public static final String MOVIES = "movies";
+
+    private int gridview_item = -1;
 
     private Movie[] movies;
     private GridView gridView;
     private GridViewAdapter gridViewAdapter;
 
     public MainActivityFragment() {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // outState ready for consumption
+
+        outState.putParcelable(GRID_VIEW_STATE, gridView.onSaveInstanceState());
+        outState.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, gridview_item == -1 ? gridView.getFirstVisiblePosition() : gridview_item);
+//        Toast.makeText(getContext(), "Saved screen orientation: " + gridView.getFirstVisiblePosition(),  Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if(savedInstanceState != null){
+
+            gridView.onRestoreInstanceState(savedInstanceState.getParcelable(GRID_VIEW_STATE));
+            gridView.setSelection(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM));
+
+
+//            Toast.makeText(getContext(), "Reloaded screen orientation: " + savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -96,8 +124,10 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        inflater.inflate(R.layout.fragment_detail, container,true);
+                             final Bundle savedInstanceState) {
+
+
+        inflater.inflate(R.layout.fragment_detail, container, true);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.main_fragment_gridview);
 
@@ -113,14 +143,16 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
                 MainActivityFragmentListener activity = (MainActivityFragmentListener) getActivity();
                 if(getActivity() != null)
                     ((MainActivityFragmentListener) getActivity()).OnMessageFromMainActivityFragment(bundle);
+                gridview_item = position;
             }
 
         });
 
 
         gridView.setNumColumns(getResources().getInteger(R.integer.grid_columns));
-
         setupLoad();
+
+//        Toast.makeText(getContext(), "Recreated the screen: ", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }

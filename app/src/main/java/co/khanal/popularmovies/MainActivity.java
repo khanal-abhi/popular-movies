@@ -27,20 +27,27 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-    }
-
-
-
-
-    private void showDetail(Movie movie){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Movie.MOVIE_KEY, movie);
-        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
-        detailActivityFragment.setArguments(bundle);
-
+        if(savedInstanceState != null){
+            getSupportFragmentManager().getFragment(savedInstanceState, MAIN_FRAG_KEY);
+            getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAG_KEY);
+        }
 
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        // need to check for both the fragments, if the fragment is null then don't need to put it in
+        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.main_fragment);
+        DetailActivityFragment detailActivityFragment = (DetailActivityFragment)getSupportFragmentManager().findFragmentById(R.id.details_fragment);
+        if(mainActivityFragment != null)
+            getSupportFragmentManager().putFragment(outState, MAIN_FRAG_KEY, mainActivityFragment);
+        if(detailActivityFragment != null)
+            getSupportFragmentManager().putFragment(outState, DETAIL_FRAG_KEY, detailActivityFragment);
+
+    }
 
     @Override
     public Movie getMovie() {
@@ -54,11 +61,13 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
 
     @Override
     public void OnMessageFromMainActivityFragment(Bundle bundle) {
+        Toast.makeText(getApplicationContext(), "On Message from main", Toast.LENGTH_SHORT).show();
         movie = bundle.getParcelable(Movie.MOVIE_KEY);
+        boolean clicked = bundle.getBoolean(MainActivityFragment.CLICKED);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment detailActivityFragment = fragmentManager.findFragmentById(R.id.details_fragment);
         if(detailActivityFragment != null && movie != null) {
-            ((DetailActivityFragment) detailActivityFragment).loadMovie(movie);
+            ((DetailActivityFragment) detailActivityFragment).loadMovie(movie, clicked);
         } else if (movie != null && bundle.getBoolean(MainActivityFragment.CLICKED)){
             Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
             intent.putExtra(Movie.MOVIE_KEY, movie);

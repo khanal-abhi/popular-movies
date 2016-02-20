@@ -169,6 +169,8 @@ public class Movie implements Parcelable{
         return movies;
     }
 
+
+
     public interface CanGetMovie{
         public Movie getMovie();
     }

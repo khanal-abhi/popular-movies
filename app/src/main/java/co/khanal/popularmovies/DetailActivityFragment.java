@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,10 +24,9 @@ import java.text.DecimalFormat;
  */
 public class DetailActivityFragment extends Fragment {
 
-    private final String PERSON_KEY = "person";
+
 
     private TextView movieYear;
-    private TextView movieLength;
     private TextView movieRating;
     private TextView synapsis;
     private TextView movieTitle;
@@ -35,15 +35,37 @@ public class DetailActivityFragment extends Fragment {
 
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        Activity activity = getActivity();
-        movie = ((Movie.CanGetMovie)getActivity()).getMovie();
-        if(movie != null) {
-            loadMovie(movie.cleanMovie());
+        if(movie == null){
+            throw new NullPointerException("Movie cannot be null, EVER!");
+        }
+        outState.putParcelable(Movie.MOVIE_KEY, movie);
+//        Toast.makeText(getContext(), "Saving movie", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+//        Toast.makeText(getContext(), "Activity created", Toast.LENGTH_SHORT).show();
+
+        if(savedInstanceState != null){
+//            Toast.makeText(getContext(), "Loading previous movie", Toast.LENGTH_SHORT).show();
+            movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
+            loadMovie(movie);
+        } else {
+//            Toast.makeText(getContext(), "No previous movies? wth??", Toast.LENGTH_SHORT).show();
+            movie = ((Movie.CanGetMovie) getActivity()).getMovie();
+            if (movie != null) {
+                loadMovie(movie.cleanMovie());
+//                Toast.makeText(getContext(), "Loading movie", Toast.LENGTH_SHORT).show();
+            }
         }
 
-        super.onActivityCreated(savedInstanceState);
+
+
     }
 
 
@@ -58,6 +80,7 @@ public class DetailActivityFragment extends Fragment {
 
     public void loadMovie(Movie movie){
         if(movie != null) {
+            this.movie = movie;
             DecimalFormat df = new DecimalFormat("0.0");
             movieTitle.setText(movie.getOriginalTitle());
             String releaseYear = movie.getReleaseDate();
@@ -74,6 +97,14 @@ public class DetailActivityFragment extends Fragment {
         }
     }
 
+    public void loadMovie(Movie movie, boolean clicked){
+        if(this.movie == null){
+            loadMovie(movie);
+        } else if (this.movie != null && clicked){
+            loadMovie(movie);
+        }
+    }
+
     public DetailActivityFragment() {
     }
 
@@ -82,6 +113,7 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
+//        Toast.makeText(getContext(), "Creating view", Toast.LENGTH_SHORT).show();
         movieTitle = (TextView) rootView.findViewById(R.id.movie_title);
         movieYear = (TextView) rootView.findViewById(R.id.movie_year);
         movieRating = (TextView) rootView.findViewById(R.id.movie_rating);
@@ -89,12 +121,14 @@ public class DetailActivityFragment extends Fragment {
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
 
+
         if(movie != null){
             loadMovie(movie);
         }
 
         return rootView;
     }
+
 
     public class PosterLoader extends AsyncTask<Movie, Void, Uri>{
 
