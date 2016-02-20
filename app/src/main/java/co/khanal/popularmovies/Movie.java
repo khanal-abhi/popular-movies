@@ -115,6 +115,15 @@ public class Movie implements Parcelable{
 
     }
 
+    public Movie cleanMovie(){
+        originalTitle = (originalTitle == null) ? new String("Unknown Title") : originalTitle;
+        imageUri = (imageUri == null) ? Uri.parse(new String("Unknown Title")) : imageUri;
+        synopsis = (synopsis == null) ? new String("No description") : synopsis;
+        releaseDate = (releaseDate == null) ? new String("0000-00-00") : releaseDate;
+
+        return this;
+    }
+
     @Override
     public String toString() {
         return new String("title:" + originalTitle + " release date:" + releaseDate);
@@ -145,12 +154,16 @@ public class Movie implements Parcelable{
         JSONArray moviesArray = moviesJsonObject.getJSONArray("results");
         movies = new Movie[moviesArray.length()];
         for(int i = 0; i < moviesArray.length(); i++){
-            movies[i] = new Movie();
+            movies[i] = new Movie(
+
+            );
             movies[i].setOriginalTitle(moviesArray.getJSONObject(i).getString("original_title"));
             movies[i].setImageUri("http://image.tmdb.org/t/p/w185/" + moviesArray.getJSONObject(i).getString("poster_path"));
             movies[i].setSynopsis(moviesArray.getJSONObject(i).getString("overview"));
             movies[i].setReleaseDate(moviesArray.getJSONObject(i).getString("release_date"));
             movies[i].setUserRating(moviesArray.getJSONObject(i).getDouble("vote_average"));
+
+            movies[i].cleanMovie();
         }
 
         return movies;

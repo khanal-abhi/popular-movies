@@ -39,7 +39,9 @@ public class DetailActivityFragment extends Fragment {
 
         Activity activity = getActivity();
         movie = ((Movie.CanGetMovie)getActivity()).getMovie();
-        loadMovie(movie);
+        if(movie != null) {
+            loadMovie(movie.cleanMovie());
+        }
 
         super.onActivityCreated(savedInstanceState);
     }

@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
         movie = bundle.getParcelable(Movie.MOVIE_KEY);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment detailActivityFragment = fragmentManager.findFragmentById(R.id.details_fragment);
-        ((DetailActivityFragment) detailActivityFragment).loadMovie(movie);
+        if(detailActivityFragment != null && movie != null) {
+            ((DetailActivityFragment) detailActivityFragment).loadMovie(movie);
+        }
     }
 }

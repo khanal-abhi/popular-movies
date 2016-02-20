@@ -3,11 +3,13 @@ package co.khanal.popularmovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.text.BoringLayout;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -71,11 +73,24 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
         float w = parent.getWidth();
         float h = (277f * w)  /185f;
 
-        placeHolder.imageView.setMinimumWidth((int) w / 2);
-        placeHolder.imageView.setMinimumHeight((int) h / 2);
 
-        placeHolder.imageView.setMaxWidth((int) w / 2);
-        placeHolder.imageView.setMaxWidth((int)w/2);
+        if(getContext().getResources().getBoolean(R.bool.landscape))
+        {
+            ((GridView)parent).setNumColumns(3);
+            placeHolder.imageView.setMinimumWidth((int) (w / 3));
+            placeHolder.imageView.setMinimumHeight((int) (h / 3));
+
+            placeHolder.imageView.setMaxWidth((int) (w / 3));
+            placeHolder.imageView.setMaxHeight((int) (h / 3));
+        } else {
+            placeHolder.imageView.setMinimumWidth((int) (w / 2));
+            placeHolder.imageView.setMinimumHeight((int) (h / 2));
+
+            placeHolder.imageView.setMaxWidth((int) (w / 2));
+            placeHolder.imageView.setMaxHeight((int) (h / 2));
+        }
+
+
 
         Movie movie = movies[position];
         Picasso.with(appContext).load(movie.getImageUri()).into(placeHolder.imageView);
