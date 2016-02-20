@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by abhi on 2/18/16.
  */
@@ -133,6 +137,27 @@ public class Movie implements Parcelable{
 
         dest.writeBundle(bundle);
 
+    }
+
+    public static Movie[] parseJsonMovies(String jsonMovies) throws JSONException {
+        Movie[] movies;
+        JSONObject moviesJsonObject = new JSONObject(jsonMovies);
+        JSONArray moviesArray = moviesJsonObject.getJSONArray("results");
+        movies = new Movie[moviesArray.length()];
+        for(int i = 0; i < moviesArray.length(); i++){
+            movies[i] = new Movie();
+            movies[i].setOriginalTitle(moviesArray.getJSONObject(i).getString("original_title"));
+            movies[i].setImageUri("http://image.tmdb.org/t/p/w185/" + moviesArray.getJSONObject(i).getString("poster_path"));
+            movies[i].setSynopsis(moviesArray.getJSONObject(i).getString("overview"));
+            movies[i].setReleaseDate(moviesArray.getJSONObject(i).getString("release_date"));
+            movies[i].setUserRating(moviesArray.getJSONObject(i).getDouble("vote_average"));
+        }
+
+        return movies;
+    }
+
+    public interface CanGetMovie{
+        public Movie getMovie();
     }
 
 

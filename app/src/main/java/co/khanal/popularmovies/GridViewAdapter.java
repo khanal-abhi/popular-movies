@@ -19,9 +19,9 @@ import java.util.zip.Inflater;
  */
 public class GridViewAdapter extends ArrayAdapter<Movie> {
 
-    Context appContext = null;
-    int layoutId;
-    Movie[] movies;
+    private Context appContext = null;
+    private int layoutId;
+    private Movie[] movies;
 
     public GridViewAdapter(Context context, int resource, Movie[] objects) {
         super(context, resource, objects);
@@ -33,8 +33,24 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
 
     }
 
+    public Movie[] getMovies() {
+        return movies;
+    }
+
+    public void setMovies(Movie[] movies) {
+        this.movies = movies;
+    }
+
+    @Override
+    public Movie getItem(int position) {
+        return movies[position];
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        if (movies == null)
+            return null;
 
         View grid_item = convertView;
 
@@ -52,11 +68,14 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
             grid_item.setTag(placeHolder);
         }
 
-        float w = parent.getWidth()/ 2;
+        float w = parent.getWidth();
         float h = (277f * w)  /185f;
 
-        placeHolder.imageView.setMinimumWidth((int)w);
-        placeHolder.imageView.setMinimumHeight((int)h);
+        placeHolder.imageView.setMinimumWidth((int) w / 2);
+        placeHolder.imageView.setMinimumHeight((int) h / 2);
+
+        placeHolder.imageView.setMaxWidth((int) w / 2);
+        placeHolder.imageView.setMaxWidth((int)w/2);
 
         Movie movie = movies[position];
         Picasso.with(appContext).load(movie.getImageUri()).into(placeHolder.imageView);

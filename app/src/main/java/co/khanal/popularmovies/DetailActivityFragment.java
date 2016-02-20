@@ -1,5 +1,8 @@
 package co.khanal.popularmovies;
 
+import android.app.Activity;
+import android.content.Context;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -22,8 +25,42 @@ public class DetailActivityFragment extends Fragment {
 
     private final String PERSON_KEY = "person";
 
-    TextView movieTitle, movieYear, movieLength, movieRating, synapsis;
-    ImageView poster;
+    private TextView movieYear;
+    private TextView movieLength;
+    private TextView movieRating;
+    private TextView synapsis;
+    private TextView movieTitle;
+    private ImageView poster;
+    private Movie movie;
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+
+        Activity activity = getActivity();
+        movie = ((Movie.CanGetMovie)getActivity()).getMovie();
+        loadMovie(movie);
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    public void loadMovie(Movie movie){
+        if(movie != null) {
+            DecimalFormat df = new DecimalFormat("0.0");
+            movieTitle.setText(movie.getOriginalTitle());
+            String releaseYear = movie.getReleaseDate();
+            try {
+                releaseYear = releaseYear.substring(0, 4);
+            } catch (IndexOutOfBoundsException e) {
+                releaseYear = "Unknown";
+            }
+            movieYear.setText(releaseYear);
+            movieRating.setText(String.valueOf(df.format(movie.getUserRating())) + "/10");
+            synapsis.setText(movie.getSynopsis());
+
+            new PosterLoader().execute(movie);
+        }
+    }
 
     public DetailActivityFragment() {
     }
@@ -40,20 +77,6 @@ public class DetailActivityFragment extends Fragment {
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
 
-        Movie movie = (Movie) getActivity().getIntent().getExtras().getParcelable(Movie.MOVIE_KEY);
-        Log.v("TAG", movie.toString());
-
-        DecimalFormat df = new DecimalFormat("0.0");
-//        Picasso.with(getContext()).load(movie.getImageUri()).into(poster);
-        movieTitle.setText(movie.getOriginalTitle());
-        String releaseYear = movie.getReleaseDate();
-        releaseYear = releaseYear.substring(0,4);
-        movieYear.setText(releaseYear);
-        movieRating.setText(String.valueOf(df.format(movie.getUserRating())) +"/10");
-        synapsis.setText(movie.getSynopsis());
-
-        new PosterLoader().execute(movie);
-
         return rootView;
     }
 
@@ -68,5 +91,9 @@ public class DetailActivityFragment extends Fragment {
         protected void onPostExecute(Uri uri) {
             Picasso.with(getContext()).load(uri).into(poster);
         }
+    }
+
+    public interface DetailActivityListener{
+        public void OnMessageFromDetailActivityFragment(Bundle bundle);
     }
 }
