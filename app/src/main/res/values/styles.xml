@@ -19,9 +19,11 @@
 
     <style name="title_block">
         <item name="android:textSize">36sp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:background">@color/colorAccent</item>
-        <item name="android:padding">30dp</item>
         <item name="android:gravity">center_vertical</item>
     </style>
 
@@ -35,6 +37,23 @@
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:background">@color/colorAccent</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="movie_year">
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="movie_rating">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+
+    <style name="synopsis">
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_margin">10dp</item>
     </style>
 
 </resources>

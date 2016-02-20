@@ -1,19 +1,15 @@
 package co.khanal.popularmovies;
 
-import android.app.Activity;
-import android.content.Context;
-import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +24,7 @@ public class DetailActivityFragment extends Fragment {
 
     private TextView movieYear;
     private TextView movieRating;
-    private TextView synapsis;
+    private TextView synopsis;
     private TextView movieTitle;
     private ImageView poster;
     private Movie movie;
@@ -42,25 +38,19 @@ public class DetailActivityFragment extends Fragment {
             throw new NullPointerException("Movie cannot be null, EVER!");
         }
         outState.putParcelable(Movie.MOVIE_KEY, movie);
-//        Toast.makeText(getContext(), "Saving movie", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        Toast.makeText(getContext(), "Activity created", Toast.LENGTH_SHORT).show();
-
         if(savedInstanceState != null){
-//            Toast.makeText(getContext(), "Loading previous movie", Toast.LENGTH_SHORT).show();
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
             loadMovie(movie);
         } else {
-//            Toast.makeText(getContext(), "No previous movies? wth??", Toast.LENGTH_SHORT).show();
             movie = ((Movie.CanGetMovie) getActivity()).getMovie();
             if (movie != null) {
                 loadMovie(movie.cleanMovie());
-//                Toast.makeText(getContext(), "Loading movie", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -80,20 +70,24 @@ public class DetailActivityFragment extends Fragment {
 
     public void loadMovie(Movie movie){
         if(movie != null) {
-            this.movie = movie;
-            DecimalFormat df = new DecimalFormat("0.0");
-            movieTitle.setText(movie.getOriginalTitle());
-            String releaseYear = movie.getReleaseDate();
-            try {
-                releaseYear = releaseYear.substring(0, 4);
-            } catch (IndexOutOfBoundsException e) {
-                releaseYear = "Unknown";
-            }
-            movieYear.setText(releaseYear);
-            movieRating.setText(String.valueOf(df.format(movie.getUserRating())) + "/10");
-            synapsis.setText(movie.getSynopsis());
+            try{
+                this.movie = movie;
+                DecimalFormat df = new DecimalFormat("0.0");
+                movieTitle.setText(movie.getOriginalTitle());
+                String releaseYear = movie.getReleaseDate();
+                try {
+                    releaseYear = releaseYear.substring(0, 4);
+                } catch (IndexOutOfBoundsException e) {
+                    releaseYear = "Unknown";
+                }
+                movieYear.setText(releaseYear);
+                movieRating.setText(String.valueOf(df.format(movie.getUserRating())) + "/10");
+                synopsis.setText(movie.getSynopsis());
 
-            new PosterLoader().execute(movie);
+                new PosterLoader().execute(movie);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -113,14 +107,12 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-//        Toast.makeText(getContext(), "Creating view", Toast.LENGTH_SHORT).show();
         movieTitle = (TextView) rootView.findViewById(R.id.movie_title);
         movieYear = (TextView) rootView.findViewById(R.id.movie_year);
         movieRating = (TextView) rootView.findViewById(R.id.movie_rating);
-        synapsis = (TextView) rootView.findViewById(R.id.synapsis);
+        synopsis = (TextView) rootView.findViewById(R.id.synopsis);
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
-
 
         if(movie != null){
             loadMovie(movie);
@@ -144,6 +136,7 @@ public class DetailActivityFragment extends Fragment {
                     .placeholder(R.drawable.ic_thumb_up_white_48dp)
                     .error(R.drawable.ic_trending_up_white_48dp)
                     .into(poster);
+
         }
     }
 
