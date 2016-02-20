@@ -29,15 +29,14 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
 
     public static final String GRID_VIEW_FIRST_VISIBLE_ITEM = "grid_view_first_visible_item";
     private static final String GRID_VIEW_STATE = "grid_view_state";
+    public static final String CLICKED = "clicked";
 
-    private MainActivityFragmentListener activity;
     private Movie[] movies;
     private GridView gridView;
     private GridViewAdapter gridViewAdapter;
 
     public MainActivityFragment() {
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,18 +68,6 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        activity = (MainActivityFragmentListener) getActivity();
-        Bundle bundle = new Bundle();
-        if(gridViewAdapter != null){
-            Movie movie = gridViewAdapter.getItem(0);
-            bundle.putParcelable(Movie.MOVIE_KEY, (Movie)gridViewAdapter.getItem(0));
-            activity.OnMessageFromMainActivityFragment(bundle);
-        }
-        super.onActivityCreated(savedInstanceState);
-    }
-
     private void sortByPopular(){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         String currentOrder = pref.getString(getString(R.string.pref_sort_by_key), "");
@@ -110,29 +97,28 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        inflater.inflate(R.layout.fragment_detail, container,true);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.main_fragment_gridview);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                FragmentManager fragmentManager = getFragmentManager();
-                Fragment detailsFragment = fragmentManager.findFragmentById(R.id.details_fragment);
-                if (detailsFragment != null) {
-                    Bundle bundle = new Bundle();
-                    Movie movie = (Movie) parent.getAdapter().getItem(position);
-                    bundle.putParcelable(Movie.MOVIE_KEY, movie);
-                    activity.OnMessageFromMainActivityFragment(bundle);
-
-                } else {
-                    Intent intent = new Intent(getContext(), DetailActivity.class);
-                    Movie movie = (Movie) parent.getAdapter().getItem(position);
-                    intent.putExtra(Movie.MOVIE_KEY, movie);
-                    startActivity(intent);
-                }
+                Bundle bundle = new Bundle();
+                Movie movie = (Movie) parent.getAdapter().getItem(position);
+                bundle.putParcelable(Movie.MOVIE_KEY, movie);
+                bundle.putBoolean(CLICKED, true);
+                MainActivityFragmentListener activity = (MainActivityFragmentListener) getActivity();
+                if(getActivity() != null)
+                    ((MainActivityFragmentListener) getActivity()).OnMessageFromMainActivityFragment(bundle);
             }
+
         });
+
+
+        gridView.setNumColumns(getResources().getInteger(R.integer.grid_columns));
 
         setupLoad();
 
@@ -163,7 +149,10 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(Movie.MOVIE_KEY,movies[0]);
-        activity.OnMessageFromMainActivityFragment(bundle);
+        bundle.putBoolean(CLICKED, false);
+        if(getActivity() != null){
+            ((MainActivityFragmentListener)getActivity()).OnMessageFromMainActivityFragment(bundle);
+        }
     }
 
 

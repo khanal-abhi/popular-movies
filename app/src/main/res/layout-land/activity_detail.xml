@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="co.khanal.popularmovies.MainActivity">
+    tools:context="co.khanal.popularmovies.DetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -24,12 +24,11 @@
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main_fragment"
-        android:name="co.khanal.popularmovies.MainActivityFragment"
+        android:id="@+id/details_fragment"
+        android:name="co.khanal.popularmovies.DetailActivityFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:layout="@layout/fragment_main" />
-
+        tools:layout="@layout/fragment_detail" />
 
 </android.support.design.widget.CoordinatorLayout>

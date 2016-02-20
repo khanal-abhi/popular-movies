@@ -74,26 +74,22 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
         float h = (277f * w)  /185f;
 
 
-        if(getContext().getResources().getBoolean(R.bool.landscape))
-        {
-            ((GridView)parent).setNumColumns(3);
-            placeHolder.imageView.setMinimumWidth((int) (w / 3));
-            placeHolder.imageView.setMinimumHeight((int) (h / 3));
+        int columns = appContext.getResources().getInteger(R.integer.grid_columns);
+        ((GridView) parent).setNumColumns(columns);
 
-            placeHolder.imageView.setMaxWidth((int) (w / 3));
-            placeHolder.imageView.setMaxHeight((int) (h / 3));
-        } else {
-            placeHolder.imageView.setMinimumWidth((int) (w / 2));
-            placeHolder.imageView.setMinimumHeight((int) (h / 2));
+        placeHolder.imageView.setMinimumWidth((int) (w / columns));
+        placeHolder.imageView.setMinimumHeight((int) (h / columns));
 
-            placeHolder.imageView.setMaxWidth((int) (w / 2));
-            placeHolder.imageView.setMaxHeight((int) (h / 2));
-        }
-
-
+        placeHolder.imageView.setMaxWidth((int) (w / columns));
+        placeHolder.imageView.setMaxHeight((int) (h / columns));
 
         Movie movie = movies[position];
-        Picasso.with(appContext).load(movie.getImageUri()).into(placeHolder.imageView);
+        Picasso.with(appContext)
+                .load(movie.getImageUri())
+                .placeholder(R.drawable.ic_thumb_up_white_48dp)
+                .error(R.drawable.ic_trending_up_white_48dp)
+                .into(placeHolder.imageView)
+        ;
 
 
         return grid_item;

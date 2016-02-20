@@ -1,0 +1,110 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="co.khanal.popularmovies.DetailActivityFragment"
+    tools:showIn="@layout/activity_detail">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:id="@+id/poster"
+            style="@style/poster"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"/>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/title_block"
+                    android:id="@+id/movie_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="3">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:padding="5dp"
+                            android:layout_margin="5dp"
+                            android:id="@+id/movie_year"
+                            android:textSize="24sp"
+                            android:text="Year"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:padding="5dp"
+                            android:layout_margin="5dp"
+                            android:textStyle="bold"
+                            android:id="@+id/movie_rating"
+                            android:textSize="14sp"
+                            android:text="7.1/10"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                        <Button
+                            android:layout_margin="5dp"
+                            android:padding="5dp"
+                            android:onClick="markFavorite"
+                            style="@style/favorite_button"
+                            android:text="Mark As\nFavorite"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_margin="5dp"
+                        android:padding="5dp"
+                        android:id="@+id/synapsis"
+                        android:text="Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lorem ipsum, Lore"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"/>
+
+
+                </LinearLayout>
+
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></ListView>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+
+
+
+
+
+</FrameLayout>

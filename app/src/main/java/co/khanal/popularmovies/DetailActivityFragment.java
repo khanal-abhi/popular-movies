@@ -46,6 +46,16 @@ public class DetailActivityFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Bundle bundle = getArguments();
+        if(bundle != null) {
+            this.movie = bundle.getParcelable(Movie.MOVIE_KEY);
+        }
+        super.onCreate(savedInstanceState);
+    }
+
     public void loadMovie(Movie movie){
         if(movie != null) {
             DecimalFormat df = new DecimalFormat("0.0");
@@ -79,6 +89,10 @@ public class DetailActivityFragment extends Fragment {
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
 
+        if(movie != null){
+            loadMovie(movie);
+        }
+
         return rootView;
     }
 
@@ -91,7 +105,11 @@ public class DetailActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Uri uri) {
-            Picasso.with(getContext()).load(uri).into(poster);
+            Picasso.with(getContext())
+                    .load(uri)
+                    .placeholder(R.drawable.ic_thumb_up_white_48dp)
+                    .error(R.drawable.ic_trending_up_white_48dp)
+                    .into(poster);
         }
     }
 

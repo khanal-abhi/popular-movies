@@ -2,6 +2,7 @@ package co.khanal.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,9 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
         MainActivityFragment.MainActivityFragmentListener,
         DetailActivityFragment.DetailActivityListener {
 
+    private static final String MAIN_FRAG_KEY = "main_frag_key";
+    private static final String DETAIL_FRAG_KEY = "detail_frag_key";
+
     private Movie movie;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,18 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+    }
+
+
+
+
+    private void showDetail(Movie movie){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Movie.MOVIE_KEY, movie);
+        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+        detailActivityFragment.setArguments(bundle);
+
 
     }
 
@@ -43,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements Movie.CanGetMovie
         Fragment detailActivityFragment = fragmentManager.findFragmentById(R.id.details_fragment);
         if(detailActivityFragment != null && movie != null) {
             ((DetailActivityFragment) detailActivityFragment).loadMovie(movie);
+        } else if (movie != null && bundle.getBoolean(MainActivityFragment.CLICKED)){
+            Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+            intent.putExtra(Movie.MOVIE_KEY, movie);
+            startActivity(intent);
         }
     }
 }
