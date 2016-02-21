@@ -15,9 +15,9 @@ import java.net.URL;
 /**
  * Created by abhi on 2/19/16.
  * This is an AsyncTask subclass that takes a MoviesReceiver as a constructor paramter. It takes
- * String[] that contains BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM and API_KEY for
- * background execution and on task completion, calls the MoviesReceiver's OnReceiveMovies method
- * passing in the movies returned.
+ * String[] that contains BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM, API_KEY,
+ * IMAGE_BASE_URI for background execution and on task completion, calls the MoviesReceiver's
+ * OnReceiveMovies method passing in the movies returned.
  */
 public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
 
@@ -31,7 +31,7 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
     protected Movie[] doInBackground(String[]... params) {
 
 //        Order is extremely important here!!!
-//        BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM, API_KEY
+//        BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM, API_KEY, IMAGE_BASE_URI
 
         final String[] PARAMS = params[0];
         final String BASE_URI = PARAMS[0];
@@ -39,6 +39,7 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
         final String SORT_METHOD = PARAMS[2];
         final String API_KEY_PARAM = PARAMS[3];
         final String API_KEY = PARAMS[4];
+        final String IMAGE_BASE_URI = PARAMS[5];
 
         Uri uri = Uri.parse(BASE_URI).buildUpon()
                 .appendQueryParameter(SORT_BY_PARAM, SORT_METHOD)
@@ -92,14 +93,12 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
             }
             movies = new Movie[0];
             try {
-                movies = Movie.parseJsonMovies(jsonMovies) ;
+                movies = Movie.parseJsonMovies(jsonMovies, IMAGE_BASE_URI) ;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         return movies;
-
-
     }
 
 

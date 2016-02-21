@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,17 +12,26 @@ import org.json.JSONObject;
 
 /**
  * Created by abhi on 2/18/16.
- */
+ * This is the Movie class that implements Parcelable for data transfer to different activity /
+ * fragment life cycle stages. It takes in long id, String originalTitle, String imageUri,
+ * String synopsis, double userRating, String releaseDate for its construction. It also defines an
+ * implementation MovieProvider that defines getMovie method.
+ **/
 public class Movie implements Parcelable{
 
+    private static final String TAG = Movie.class.getSimpleName();
+
+    private static final String ID = "id";
     private static final String TITLE = "title";
-    private static final String IMAGE_URI = "image_uri";
-    private static final String SYNOPSIS = "synopsis";
-    private static final String USER_RATING = "user_rating";
+    private static final String IMAGE_URI = "poster_path";
+    private static final String SYNOPSIS = "overview";
+    private static final String USER_RATING = "vote_average";
     private static final String RELEASE_DATE = "release_date";
+
 
     public static final String MOVIE_KEY = "movie";
 
+    private long id;
     private String originalTitle;
     private Uri imageUri;
     private String synopsis;
@@ -35,13 +45,13 @@ public class Movie implements Parcelable{
             Bundle bundle = in.readBundle();
 
             return new Movie(
+                    bundle.getLong(ID),
                     bundle.getString(TITLE),
                     bundle.getString(IMAGE_URI),
                     bundle.getString(SYNOPSIS),
                     bundle.getDouble(USER_RATING),
                     bundle.getString(RELEASE_DATE)
             );
-
 
         }
 
@@ -55,78 +65,39 @@ public class Movie implements Parcelable{
         return originalTitle;
     }
 
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
-    }
-
     public Uri getImageUri() {
         return imageUri;
-    }
-
-    public void setImageUri(String imageUri) {
-        this.imageUri = Uri.parse(imageUri);
-    }
-
-    public void setImageUri(Uri uri){
-        this.imageUri = uri;
     }
 
     public String getSynopsis() {
         return synopsis;
     }
 
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
-    }
-
     public double getUserRating() {
         return userRating;
-    }
-
-    public void setUserRating(double userRating) {
-        this.userRating = userRating;
     }
 
     public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public Movie(String originalTitle, Uri imageUri, String synopsis, double userRating, String releaseDate) {
-        this.originalTitle = originalTitle;
-        this.imageUri = imageUri;
-        this.synopsis = synopsis;
-        this.userRating = userRating;
-        this.releaseDate = releaseDate;
-    }
-
-    public Movie(String originalTitle, String imageUri, String synopsis, double userRating, String releaseDate) {
-        this.originalTitle = originalTitle;
-        this.imageUri = Uri.parse(imageUri);
-        this.synopsis = synopsis;
-        this.userRating = userRating;
-        this.releaseDate = releaseDate;
-    }
-
-    public Movie(){
-
-    }
-
-    public Movie cleanMovie(){
-        originalTitle = (originalTitle == null) ? new String("Unknown Title") : originalTitle;
-        imageUri = (imageUri == null) ? Uri.parse(new String("Unknown Title")) : imageUri;
-        synopsis = (synopsis == null) ? new String("No description") : synopsis;
-        releaseDate = (releaseDate == null) ? new String("0000-00-00") : releaseDate;
-
-        return this;
+    public Movie(long id, String originalTitle, String imageUri, String synopsis, double userRating, String releaseDate) {
+        this.id = id;
+        this.originalTitle = originalTitle == null ? "UNKNOWN TITLE" : originalTitle;
+        this.imageUri = imageUri == null ? Uri.parse("https://image.freepik.com/free-icon/sad-emoticon-square-face_318-58601.png") : Uri.parse(imageUri);
+        this.synopsis = synopsis == null ? "No data found." : synopsis;
+        this.userRating = userRating == 0 ? 5 : userRating;
+        this.releaseDate = releaseDate == null ? "" : releaseDate;
     }
 
     @Override
     public String toString() {
-        return new String("title:" + originalTitle + " release date:" + releaseDate);
+        return "id: " + id +
+                "\noriginal_title: " + originalTitle +
+                "\nimage_uri: " + imageUri +
+                "\nsynopsis: " + synopsis +
+                "\nuser_rating: " + userRating +
+                "\nrelease_date: " + releaseDate;
     }
 
     @Override
@@ -138,6 +109,7 @@ public class Movie implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
 
         Bundle bundle = new Bundle();
+        bundle.putLong(ID, id);
         bundle.putString(TITLE, originalTitle);
         bundle.putString(IMAGE_URI, imageUri.toString());
         bundle.putString(SYNOPSIS, synopsis);
@@ -148,32 +120,29 @@ public class Movie implements Parcelable{
 
     }
 
-    public static Movie[] parseJsonMovies(String jsonMovies) throws JSONException {
+    public static Movie[] parseJsonMovies(String jsonMovies, String IMAGE_BASE_URI) throws JSONException {
         Movie[] movies;
         JSONObject moviesJsonObject = new JSONObject(jsonMovies);
         JSONArray moviesArray = moviesJsonObject.getJSONArray("results");
         movies = new Movie[moviesArray.length()];
         for(int i = 0; i < moviesArray.length(); i++){
+            JSONObject movie = moviesArray.getJSONObject(i);
             movies[i] = new Movie(
-
+                    movie.getLong(ID),
+                    movie.getString(TITLE),
+                    IMAGE_BASE_URI + movie.getString(IMAGE_URI),
+                    movie.getString(SYNOPSIS),
+                    movie.getDouble(USER_RATING),
+                    movie.getString(RELEASE_DATE)
             );
-            movies[i].setOriginalTitle(moviesArray.getJSONObject(i).getString("original_title"));
-            movies[i].setImageUri("http://image.tmdb.org/t/p/w185/" + moviesArray.getJSONObject(i).getString("poster_path"));
-            movies[i].setSynopsis(moviesArray.getJSONObject(i).getString("overview"));
-            movies[i].setReleaseDate(moviesArray.getJSONObject(i).getString("release_date"));
-            movies[i].setUserRating(moviesArray.getJSONObject(i).getDouble("vote_average"));
 
-            movies[i].cleanMovie();
         }
 
         return movies;
     }
 
-
-
-    public interface CanGetMovie{
-        public Movie getMovie();
+    public interface MovieProvider {
+        Movie getMovie();
     }
-
 
 }

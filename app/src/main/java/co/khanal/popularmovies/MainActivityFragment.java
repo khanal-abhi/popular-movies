@@ -148,13 +148,15 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         final String SORT_BY_PARAM = getString(R.string.sort_by_param);
         final String API_KEY_PARAM = getString(R.string.api_key_param);
         final String API_KEY = getString(R.string.api_key);
+        final String IMAGE_BASE_URI = getString(R.string.image_base_uri);
 
         final String[] PARAMS = {
                 BASE_URI,
                 SORT_BY_PARAM,
                 SORT_METHOD,
                 API_KEY_PARAM,
-                API_KEY
+                API_KEY,
+                IMAGE_BASE_URI
         };
 
         new LoadMoviesFromApi((LoadMoviesFromApi.MoviesReceiver)getFragmentManager().findFragmentById(R.id.main_fragment)).execute(PARAMS);

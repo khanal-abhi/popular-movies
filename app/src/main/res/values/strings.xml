@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="mark_as_favorite" translatable="false">Mark As\nFavorite</string>
 
+    <string name="image_base_uri">http://image.tmdb.org/t/p/w185/</string>
     <string name="sort_by_param" translatable="false">sort_by</string>
     <string name="api_key" translatable="false">d4cb1a5611095189dc11c7b9781eac71</string>
     <string name="api_key_param" translatable="false">api_key</string>

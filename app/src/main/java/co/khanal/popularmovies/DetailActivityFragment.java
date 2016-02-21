@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,9 @@ public class DetailActivityFragment extends Fragment {
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
             loadMovie(movie);
         } else {
-            movie = ((Movie.CanGetMovie) getActivity()).getMovie();
+            movie = ((Movie.MovieProvider) getActivity()).getMovie();
             if (movie != null) {
-                loadMovie(movie.cleanMovie());
+                loadMovie(movie);
             }
         }
 
