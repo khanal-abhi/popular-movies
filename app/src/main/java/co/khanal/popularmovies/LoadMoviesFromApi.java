@@ -30,6 +30,9 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
     @Override
     protected Movie[] doInBackground(String[]... params) {
 
+//        Order is extremely important here!!!
+//        BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM, API_KEY
+
         final String[] PARAMS = params[0];
         final String BASE_URI = PARAMS[0];
         final String SORT_BY_PARAM = PARAMS[1];
@@ -66,11 +69,9 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
             while ((line = bufferedReader.readLine()) != null){
                 stringBuffer.append(line);
             }
-
             if(stringBuffer.length() == 0){
                 stringBuffer = null;
             }
-
             if(stringBuffer != null) {
                 jsonMovies = stringBuffer.toString();
             }
@@ -95,8 +96,6 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
         }
         return movies;
 
@@ -106,16 +105,11 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
 
     @Override
     protected void onPostExecute(Movie[] movies) {
-
         receiver.onReceiveMovies(movies);
-
         super.onPostExecute(movies);
-
     }
 
     public interface MoviesReceiver{
         void onReceiveMovies(Movie[] movies);
     }
-
-
 }
