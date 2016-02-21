@@ -19,15 +19,12 @@ import java.text.DecimalFormat;
  */
 public class DetailActivityFragment extends Fragment {
 
-
-
     private TextView movieYear;
     private TextView movieRating;
     private TextView synopsis;
     private TextView movieTitle;
     private ImageView poster;
     private Movie movie;
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -52,9 +49,6 @@ public class DetailActivityFragment extends Fragment {
                 loadMovie(movie);
             }
         }
-
-
-
     }
 
 
@@ -80,7 +74,8 @@ public class DetailActivityFragment extends Fragment {
                     releaseYear = "Unknown";
                 }
                 movieYear.setText(releaseYear);
-                movieRating.setText(String.valueOf(df.format(movie.getUserRating())) + "/10");
+                String userRating = String.valueOf(df.format(movie.getUserRating())) + "/10";
+                movieRating.setText(userRating);
                 synopsis.setText(movie.getSynopsis());
 
                 new PosterLoader().execute(movie);
@@ -93,7 +88,7 @@ public class DetailActivityFragment extends Fragment {
     public void loadMovie(Movie movie, boolean clicked){
         if(this.movie == null){
             loadMovie(movie);
-        } else if (this.movie != null && clicked){
+        } else if (clicked){
             loadMovie(movie);
         }
     }
@@ -120,7 +115,6 @@ public class DetailActivityFragment extends Fragment {
         return rootView;
     }
 
-
     public class PosterLoader extends AsyncTask<Movie, Void, Uri>{
 
         @Override
@@ -137,9 +131,5 @@ public class DetailActivityFragment extends Fragment {
                     .into(poster);
 
         }
-    }
-
-    public interface DetailActivityListener{
-        public void OnMessageFromDetailActivityFragment(Bundle bundle);
     }
 }

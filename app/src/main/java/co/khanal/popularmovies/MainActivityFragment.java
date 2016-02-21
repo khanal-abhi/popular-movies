@@ -15,7 +15,9 @@ import android.widget.GridView;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * MainActivity Fragment holds a prominent GridView in addition to (so far) a thumbs up action bar
+ * item for sorting movies by rating and a trend up action bar icon for sorting movies by popularity.
+ * It saves and restores the states of its GridView, including the current scroll settings.
  */
 public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.MoviesReceiver{
 
@@ -140,8 +142,6 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         return rootView;
     }
 
-
-
     private void setupLoad(){
         final String BASE_URI = "http://api.themoviedb.org/3/discover/movie";
         final String SORT_METHOD = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(getString(R.string.pref_sort_by_key), getString(R.string.pref_sort_by_default_value));
@@ -175,10 +175,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         }
     }
 
-
     public interface MainActivityFragmentListener{
         void OnMessageFromMainActivityFragment(Bundle bundle);
     }
-
-
 }
