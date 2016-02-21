@@ -20,6 +20,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 /**
  * Created by abhi on 2/20/16.
@@ -72,12 +73,18 @@ public class PopularMoviesBlackBoxTest {
     @Test
     public void detailsScreenShouldHaveAllTheRequiredViews(){
         shouldLoadMovieDetails();
+        onView(withId(R.id.movie_title)).check(matches(isDisplayed()));
         onView(withId(R.id.poster)).check(matches(isDisplayed()));
-        onView(withId(R.id.poster)).check(matches(isDisplayed()));
-        onView(withId(R.id.poster)).check(matches(isDisplayed()));
-        onView(withId(R.id.poster)).check(matches(isDisplayed()));
-        onView(withId(R.id.poster)).check(matches(isDisplayed()));
-        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.movie_year)).check(matches(isDisplayed()));
+        onView(withId(R.id.movie_rating)).check(matches(isDisplayed()));
+        onView(withId(R.id.add_to_favorite)).check(matches(isDisplayed()));
+        onView(withId(R.id.synopsis)).perform(scrollTo()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void detailsScreenShouldHaveATrailer(){
+        shouldLoadMovieDetails();
+        onView(withText("Trailer")).perform(click());
     }
 
 //    This will integrate the interaction between main and details
