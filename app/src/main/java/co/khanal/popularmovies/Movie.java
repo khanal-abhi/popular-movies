@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,8 +17,6 @@ import org.json.JSONObject;
  * implementation MovieProvider that defines getMovie method.
  **/
 public class Movie implements Parcelable{
-
-    private static final String TAG = Movie.class.getSimpleName();
 
     private static final String ID = "id";
     private static final String TITLE = "title";

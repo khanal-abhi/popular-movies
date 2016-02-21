@@ -7,11 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements Movie.MovieProvider,
-        MainActivityFragment.MainActivityFragmentListener,
-        DetailActivityFragment.DetailActivityListener {
+        MainActivityFragment.MainActivityFragmentListener {
 
     private static final String MAIN_FRAG_KEY = "main_frag_key";
     private static final String DETAIL_FRAG_KEY = "detail_frag_key";
@@ -28,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
             getSupportFragmentManager().getFragment(savedInstanceState, MAIN_FRAG_KEY);
             getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAG_KEY);
         }
-
     }
 
 
@@ -36,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
 
-        // need to check for both the fragments, if the fragment is null then don't need to put it in
+//        Need to check for both the fragments, if the fragment is null then don't need to put it in
         MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.main_fragment);
         DetailActivityFragment detailActivityFragment = (DetailActivityFragment)getSupportFragmentManager().findFragmentById(R.id.details_fragment);
         if(mainActivityFragment != null)
@@ -52,20 +49,19 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
     }
 
     @Override
-    public void OnMessageFromDetailActivityFragment(Bundle bundle) {
-
-    }
-
-    @Override
     public void OnMessageFromMainActivityFragment(Bundle bundle) {
-        Toast.makeText(getApplicationContext(), "On Message from main", Toast.LENGTH_SHORT).show();
         movie = bundle.getParcelable(Movie.MOVIE_KEY);
         boolean clicked = bundle.getBoolean(MainActivityFragment.CLICKED);
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment detailActivityFragment = fragmentManager.findFragmentById(R.id.details_fragment);
         if(detailActivityFragment != null && movie != null) {
+//            DetailActivityFragment exists so its a dual pane layout
+
             ((DetailActivityFragment) detailActivityFragment).loadMovie(movie, clicked);
+
         } else if (movie != null && bundle.getBoolean(MainActivityFragment.CLICKED)){
+//            Only start DetailActivity if movie exists and the movie was clicked on MainActivityFragment
+
             Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
             intent.putExtra(Movie.MOVIE_KEY, movie);
             startActivity(intent);
