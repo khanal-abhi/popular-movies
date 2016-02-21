@@ -82,9 +82,10 @@ public class PopularMoviesBlackBoxTest {
     }
 
     @Test
-    public void detailsScreenShouldHaveATrailer(){
+    public void detailsScreenShouldHaveTrailersAndReviews(){
         shouldLoadMovieDetails();
-        onView(withText("Trailer")).perform(click());
+        onView(withText("Trailers:")).perform(scrollTo()).check(matches(isDisplayed()));
+        onView(withText("Reviews:")).perform(scrollTo()).check(matches(isDisplayed()));
     }
 
 //    This will integrate the interaction between main and details

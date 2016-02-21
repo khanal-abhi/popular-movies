@@ -30,7 +30,7 @@
 
         <TextView
             android:padding="5dp"
-            android:linksClickable="true"
+            android:autoLink="web"
             android:textColorLink="@color/colorAccent"
             android:textSize="16dp"
             android:text="http://www.google.com"
