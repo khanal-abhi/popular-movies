@@ -28,7 +28,7 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
         appContext = context;
         layoutId = resource;
         movies = objects;
-        
+
     }
 
     @Override
