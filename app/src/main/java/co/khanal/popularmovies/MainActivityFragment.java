@@ -1,15 +1,10 @@
 package co.khanal.popularmovies;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,13 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoadDataFromApi.MoviesReciever{
+public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.MoviesReciever{
 
     public static final String GRID_VIEW_FIRST_VISIBLE_ITEM = "grid_view_first_visible_item";
     private static final String GRID_VIEW_STATE = "grid_view_state";
@@ -60,9 +54,6 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
 
             gridView.onRestoreInstanceState(savedInstanceState.getParcelable(GRID_VIEW_STATE));
             gridView.setSelection(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM));
-
-
-//            Toast.makeText(getContext(), "Reloaded screen orientation: " + savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -169,7 +160,7 @@ public class MainActivityFragment extends Fragment implements LoadDataFromApi.Mo
 
         Log.v("TAG", uri.toString());
 
-        new LoadDataFromApi(getFragmentManager().findFragmentById(R.id.main_fragment)).execute(uri.toString());
+        new LoadMoviesFromApi(getFragmentManager().findFragmentById(R.id.main_fragment)).execute(uri.toString());
     }
 
     @Override
