@@ -69,8 +69,6 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id){
-            case R.id.action_settings:
-                break;
 
             case R.id.ratings:
                 sortByRatings();
