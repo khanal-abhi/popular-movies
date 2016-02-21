@@ -43,7 +43,6 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
         outState.putParcelable(GRID_VIEW_STATE, gridView.onSaveInstanceState());
         outState.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, gridview_item == -1 ? gridView.getFirstVisiblePosition() : gridview_item);
-//        Toast.makeText(getContext(), "Saved screen orientation: " + gridView.getFirstVisiblePosition(),  Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -151,16 +150,21 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
 
     private void setupLoad(){
+        final String BASE_URI = "http://api.themoviedb.org/3/discover/movie";
         final String SORT_METHOD = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(getString(R.string.pref_sort_by_key), getString(R.string.pref_sort_by_default_value));
+        final String SORT_BY_PARAM = getString(R.string.sort_by_param);
+        final String API_KEY_PARAM = getString(R.string.api_key_param);
+        final String API_KEY = getString(R.string.api_key);
 
-        Uri uri = Uri.parse("http://api.themoviedb.org/3/discover/movie").buildUpon()
-                .appendQueryParameter(getString(R.string.sort_by_param), SORT_METHOD)
-                .appendQueryParameter(getString(R.string.api_key_param), getString(R.string.api_key))
-                .build();
+        final String[] PARAMS = {
+                BASE_URI,
+                SORT_BY_PARAM,
+                SORT_METHOD,
+                API_KEY_PARAM,
+                API_KEY
+        };
 
-        Log.v("TAG", uri.toString());
-
-        new LoadMoviesFromApi(getFragmentManager().findFragmentById(R.id.main_fragment)).execute(uri.toString());
+        new LoadMoviesFromApi(getFragmentManager().findFragmentById(R.id.main_fragment)).execute(PARAMS);
     }
 
     @Override

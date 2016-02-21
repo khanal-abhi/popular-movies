@@ -2,6 +2,7 @@ package co.khanal.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,7 +20,7 @@ import java.net.URL;
 /**
  * Created by abhi on 2/19/16.
  */
-public class LoadMoviesFromApi extends AsyncTask<String, Void, Movie[]> {
+public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
 
     private Fragment fragment;
 
@@ -28,7 +29,19 @@ public class LoadMoviesFromApi extends AsyncTask<String, Void, Movie[]> {
     }
 
     @Override
-    protected Movie[] doInBackground(String... params) {
+    protected Movie[] doInBackground(String[]... params) {
+
+        final String[] PARAMS = params[0];
+        final String BASE_URI = PARAMS[0];
+        final String SORT_BY_PARAM = PARAMS[1];
+        final String SORT_METHOD = PARAMS[2];
+        final String API_KEY_PARAM = PARAMS[3];
+        final String API_KEY = PARAMS[4];
+
+        Uri uri = Uri.parse(BASE_URI).buildUpon()
+                .appendQueryParameter(SORT_BY_PARAM, SORT_METHOD)
+                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .build();
 
         String jsonMovies = "";
         Movie[] movies;
@@ -37,7 +50,7 @@ public class LoadMoviesFromApi extends AsyncTask<String, Void, Movie[]> {
         BufferedReader bufferedReader = null;
 
         try{
-            URL url = new URL(params[0]);
+            URL url = new URL(uri.toString());
             httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.connect();
@@ -87,6 +100,7 @@ public class LoadMoviesFromApi extends AsyncTask<String, Void, Movie[]> {
 
 
     }
+
 
     @Override
     protected void onPostExecute(Movie[] movies) {
