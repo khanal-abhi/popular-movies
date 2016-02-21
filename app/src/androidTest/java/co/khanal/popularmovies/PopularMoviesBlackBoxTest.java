@@ -25,24 +25,11 @@ import static org.hamcrest.CoreMatchers.is;
  * Created by abhi on 2/20/16.
  */
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
+public class PopularMoviesBlackBoxTest {
 
     @Rule public final ActivityRule<MainActivity> main = new ActivityRule<>(MainActivity.class);
 
-    @Before
-    public void setup(){
-
-    }
-
-    private static ViewInteraction gridsFromGridview(int id){
-        return onView(
-                allOf(
-                        isAssignableFrom(ImageView.class),
-                        withParent(isAssignableFrom(GridView.class))))
-                .check(matches(withId(id)));
-
-    }
-
+//    This will test the main activity / fragment
     @Test
     public void shouldBeAbleToLoadMainScreen(){
         onView(withText("Pop Movies")).check(matches(isDisplayed()));
@@ -61,13 +48,39 @@ public class MainActivityTest {
     }
 
     @Test
-    public void detailsScreenShouldHaveUpActionButtonButNotSettings(){
+    public void shouldHave20GridItems(){
+        onData(anything()).inAdapterView(withId(R.id.main_fragment)).atPosition(19).perform(click());
+        onView(withText("Movie Details")).check(matches(isDisplayed()));
+    }
+
+//    This will test the details activity / details fragment on the dual pane view
+    @Test
+    public void shouldLoadMovieDetails(){
         onView(withId(R.id.main_fragment)).perform(click());
         onView(withText("Movie Details")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void detailsScreenShouldHaveUpActionButtonButNotSettings(){
+        shouldLoadMovieDetails();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
+        onView(withId(R.id.popularity)).check(doesNotExist());
+        onView(withId(R.id.ratings)).check(doesNotExist());
         onView(withText("Settings")).check(doesNotExist());
     }
 
+    @Test
+    public void detailsScreenShouldHaveAllTheRequiredViews(){
+        shouldLoadMovieDetails();
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+        onView(withId(R.id.poster)).check(matches(isDisplayed()));
+    }
+
+//    This will integrate the interaction between main and details
     @Test
     public void shouldLoadTheCorrectMovieOnDetail(){
         onData(anything()).inAdapterView(withId(R.id.main_fragment)).atPosition(2)
@@ -76,9 +89,4 @@ public class MainActivityTest {
         onView(withText("Spectre")).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void shouldHave20GridItems(){
-        onData(anything()).inAdapterView(withId(R.id.main_fragment)).atPosition(19).perform(click());
-        onView(withText("Movie Details")).check(matches(isDisplayed()));
-    }
 }
