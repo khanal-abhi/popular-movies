@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:text="John Doe"
+            android:id="@+id/review_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:padding="5dp"
+            android:textStyle="italic"
+            android:textSize="16dp"
+            android:text="Lorem ipsum text goes in here. It is so effing Frustrating"
+            android:id="@+id/review_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:padding="5dp"
+            android:linksClickable="true"
+            android:textColorLink="@color/colorAccent"
+            android:textSize="16dp"
+            android:text="http://www.google.com"
+            android:id="@+id/review_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <TextView
+        android:background="#333333"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:maxHeight="1dp"/>
+
+</LinearLayout>

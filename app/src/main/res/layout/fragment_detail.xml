@@ -71,6 +71,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_below="@id/synopsis"
+            android:background="#333333"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:maxHeight="1dp"/>
+
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:id="@+id/main_layout_for_trailers"
+            android:layout_below="@id/synopsis"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textSize="20sp"
+                android:text="@string/trailers_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:id="@+id/main_layout_for_reviews"
+            android:layout_below="@id/main_layout_for_trailers"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:textSize="20sp"
+                android:text="@string/reviews_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+
+        </LinearLayout>
+
+
 
 
     </RelativeLayout>

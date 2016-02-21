@@ -1,15 +1,20 @@
 package co.khanal.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +27,7 @@ import java.text.DecimalFormat;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements FetchVideosJson.FetchVideosJsonListener{
+public class DetailActivityFragment extends Fragment implements FetchVideosJson.FetchVideosJsonListener {
 
     private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
@@ -31,6 +36,11 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
     private TextView synopsis;
     private TextView movieTitle;
     private ImageView poster;
+    private Button addToFavorite;
+
+    private LinearLayout trailersLayout;
+    private LinearLayout reviewsLayout;
+
     private Movie movie;
 
     @Override
@@ -120,6 +130,17 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
         synopsis = (TextView) rootView.findViewById(R.id.synopsis);
 
         poster = (ImageView) rootView.findViewById(R.id.poster);
+        addToFavorite = (Button) rootView.findViewById(R.id.add_to_favorite);
+
+        trailersLayout = (LinearLayout) rootView.findViewById(R.id.main_layout_for_trailers);
+        reviewsLayout = (LinearLayout) rootView.findViewById(R.id.main_layout_for_reviews);
+
+        addToFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "This will add the movie to an offline database!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if(movie != null){
             loadMovie(movie);
@@ -133,10 +154,30 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
 
         try {
             JSONArray trailersArray = videosJson.getJSONArray("results");
+            TextView trailerView;
             if(trailersArray.length() > 0){
                 for (int i = 0; i < trailersArray.length(); i++){
                     String trailerName = trailersArray.getJSONObject(i).getString("name");
-                    String trailerLink = YOUTUBE_BASE_URL + trailersArray.getJSONObject(i).getString("key");
+                    final String trailerLink = YOUTUBE_BASE_URL + trailersArray.getJSONObject(i).getString("key");
+
+                    LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                    View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
+                    ((TextView)trailerLayout.findViewById(R.id.trailer_title)).setText(trailerName);
+                    (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse(trailerLink));
+                            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    trailersLayout.addView(trailerLayout);
+
+                    View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
+                    reviewsLayout.addView(reviewLayout);
+
                 }
             }
         } catch (JSONException e) {
