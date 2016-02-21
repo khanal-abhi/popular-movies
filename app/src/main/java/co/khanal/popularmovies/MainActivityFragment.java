@@ -1,11 +1,9 @@
 package co.khanal.popularmovies;
 
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,18 +17,15 @@ import android.widget.GridView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.MoviesReciever{
+public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.MoviesReceiver{
 
     public static final String GRID_VIEW_FIRST_VISIBLE_ITEM = "grid_view_first_visible_item";
     private static final String GRID_VIEW_STATE = "grid_view_state";
     public static final String CLICKED = "clicked";
-    public static final String MOVIES = "movies";
 
-    private int gridview_item = -1;
+    private int grid_view_item = -1;
 
-    private Movie[] movies;
     private GridView gridView;
-    private GridViewAdapter gridViewAdapter;
 
     public MainActivityFragment() {
     }
@@ -42,7 +37,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         // outState ready for consumption
 
         outState.putParcelable(GRID_VIEW_STATE, gridView.onSaveInstanceState());
-        outState.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, gridview_item == -1 ? gridView.getFirstVisiblePosition() : gridview_item);
+        outState.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, grid_view_item == -1 ? gridView.getFirstVisiblePosition() : grid_view_item);
     }
 
     @Override
@@ -94,9 +89,9 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         }
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(getString(R.string.pref_sort_by_key), getString(R.string.most_popular));
-        editor.commit();
+        editor.apply();
         setupLoad();
-        return;
+
     }
 
     private void sortByRatings(){
@@ -107,9 +102,9 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         }
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(getString(R.string.pref_sort_by_key), getString(R.string.highest_rated));
-        editor.commit();
+        editor.apply();
         setupLoad();
-        return;
+
     }
 
     @Override
@@ -131,9 +126,9 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
                 bundle.putParcelable(Movie.MOVIE_KEY, movie);
                 bundle.putBoolean(CLICKED, true);
                 MainActivityFragmentListener activity = (MainActivityFragmentListener) getActivity();
-                if(getActivity() != null)
-                    ((MainActivityFragmentListener) getActivity()).OnMessageFromMainActivityFragment(bundle);
-                gridview_item = position;
+                if(activity != null)
+                    activity.OnMessageFromMainActivityFragment(bundle);
+                grid_view_item = position;
             }
 
         });
@@ -141,8 +136,6 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
         gridView.setNumColumns(getResources().getInteger(R.integer.grid_columns));
         setupLoad();
-
-//        Toast.makeText(getContext(), "Recreated the screen: ", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }
@@ -164,15 +157,13 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
                 API_KEY
         };
 
-        new LoadMoviesFromApi(getFragmentManager().findFragmentById(R.id.main_fragment)).execute(PARAMS);
+        new LoadMoviesFromApi((LoadMoviesFromApi.MoviesReceiver)getFragmentManager().findFragmentById(R.id.main_fragment)).execute(PARAMS);
     }
 
     @Override
-    public void onRecieveMovies(Movie[] movies) {
-        this.movies = movies;
+    public void onReceiveMovies(Movie[] movies) {
 
-        gridViewAdapter = new GridViewAdapter(getContext(), R.layout.grid_item, movies);
-        gridView.setAdapter(gridViewAdapter);
+        gridView.setAdapter(new GridViewAdapter(getContext(), R.layout.grid_item, movies));
 
         Bundle bundle = new Bundle();
         bundle.putParcelable(Movie.MOVIE_KEY,movies[0]);
@@ -184,7 +175,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
 
     public interface MainActivityFragmentListener{
-        public void OnMessageFromMainActivityFragment(Bundle bundle);
+        void OnMessageFromMainActivityFragment(Bundle bundle);
     }
 
 

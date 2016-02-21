@@ -1,12 +1,7 @@
 package co.khanal.popularmovies;
 
-import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.widget.GridView;
 
 import org.json.JSONException;
 
@@ -19,13 +14,17 @@ import java.net.URL;
 
 /**
  * Created by abhi on 2/19/16.
+ * This is an AsyncTask subclass that takes a MoviesReceiver as a constructor paramter. It takes
+ * String[] that contains BASE_URI, SORT_BY_PARAM, SORT_METHOD, API_KEY_PARAM and API_KEY for
+ * background execution and on task completion, calls the MoviesReceiver's OnReceiveMovies method
+ * passing in the movies returned.
  */
 public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
 
-    private Fragment fragment;
+    private MoviesReceiver receiver;
 
-    public LoadMoviesFromApi(Fragment fragment){
-        this.fragment = fragment;
+    public LoadMoviesFromApi(MoviesReceiver receiver){
+        this.receiver = receiver;
     }
 
     @Override
@@ -72,7 +71,9 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
                 stringBuffer = null;
             }
 
-            jsonMovies = stringBuffer.toString();
+            if(stringBuffer != null) {
+                jsonMovies = stringBuffer.toString();
+            }
 
         } catch (Exception e){
             e.printStackTrace();
@@ -95,8 +96,9 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
                 e.printStackTrace();
             }
 
-            return movies;
+
         }
+        return movies;
 
 
     }
@@ -105,14 +107,14 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
     @Override
     protected void onPostExecute(Movie[] movies) {
 
-        ((MoviesReciever)fragment).onRecieveMovies(movies);
+        receiver.onReceiveMovies(movies);
 
         super.onPostExecute(movies);
 
     }
 
-    public interface MoviesReciever{
-        void onRecieveMovies(Movie[] movies);
+    public interface MoviesReceiver{
+        void onReceiveMovies(Movie[] movies);
     }
 
 
