@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,18 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends Fragment implements FetchVideosJson.FetchVideosJsonListener{
+
+    private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     private TextView movieYear;
     private TextView movieRating;
@@ -78,6 +85,12 @@ public class DetailActivityFragment extends Fragment {
                 movieRating.setText(userRating);
                 synopsis.setText(movie.getSynopsis());
 
+                final String url = String.format("http://api.themoviedb.org/3/movie/%s/videos?api_key=%s", movie.getId(), getString(R.string.api_key));
+                Log.v(getClass().getSimpleName(), url);
+                new FetchVideosJson(
+                        (FetchVideosJson.FetchVideosJsonListener)getFragmentManager().findFragmentById(R.id.details_fragment)
+                ).execute(url);
+
                 new PosterLoader().execute(movie);
             } catch (Exception e){
                 e.printStackTrace();
@@ -113,6 +126,22 @@ public class DetailActivityFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onVideosFetched(JSONObject videosJson) {
+
+        try {
+            JSONArray trailersArray = videosJson.getJSONArray("results");
+            if(trailersArray.length() > 0){
+                for (int i = 0; i < trailersArray.length(); i++){
+                    String trailerName = trailersArray.getJSONObject(i).getString("name");
+                    String trailerLink = YOUTUBE_BASE_URL + trailersArray.getJSONObject(i).getString("key");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public class PosterLoader extends AsyncTask<Movie, Void, Uri>{

@@ -35,6 +35,10 @@ public class Movie implements Parcelable{
     private double userRating;
     private String releaseDate;
 
+    public String getId(){
+        return String.valueOf(id);
+    }
+
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel in) {
