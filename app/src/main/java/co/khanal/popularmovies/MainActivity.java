@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements Movie.MovieProvider,
         MainActivityFragment.MainActivityFragmentListener {
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
 
     @Override
     public void OnMessageFromMainActivityFragment(Bundle bundle) {
+        Toast.makeText(getApplicationContext(), "Movie Sent", Toast.LENGTH_SHORT).show();
         movie = bundle.getParcelable(Movie.MOVIE_KEY);
         boolean clicked = bundle.getBoolean(MainActivityFragment.CLICKED);
         FragmentManager fragmentManager = getSupportFragmentManager();

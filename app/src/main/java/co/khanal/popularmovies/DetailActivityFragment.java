@@ -60,7 +60,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
-           loadNonNullMovie(movie, savedInstanceState);
+            loadNonNullMovie(movie, savedInstanceState);
         } else {
             movie = ((Movie.MovieProvider) getActivity()).getMovie();
             loadNonNullMovie(movie, savedInstanceState);
@@ -88,6 +88,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     public void loadMovie(Movie movie){
         if(movie != null) {
             try{
+                scrollView.setVisibility(View.VISIBLE);
                 this.movie = movie;
                 DecimalFormat df = new DecimalFormat("0.0");
                 movieTitle.setText(movie.getOriginalTitle());
