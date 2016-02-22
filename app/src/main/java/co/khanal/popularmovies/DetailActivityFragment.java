@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,10 +23,12 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 
+import co.khanal.FetchJson;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements FetchVideosJson.FetchVideosJsonListener {
+public class DetailActivityFragment extends Fragment implements FetchJsonTrailers.FetchJsonTrailersListener, FetchJsonReviews.FetchJsonReviewsListener {
 
     private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
@@ -95,11 +96,11 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
                 movieRating.setText(userRating);
                 synopsis.setText(movie.getSynopsis());
 
-                final String url = String.format("http://api.themoviedb.org/3/movie/%s/videos?api_key=%s", movie.getId(), getString(R.string.api_key));
-                Log.v(getClass().getSimpleName(), url);
-                new FetchVideosJson(
-                        (FetchVideosJson.FetchVideosJsonListener)getFragmentManager().findFragmentById(R.id.details_fragment)
-                ).execute(url);
+                final String trailersUrl = String.format("http://api.themoviedb.org/3/movie/%s/videos?api_key=%s", movie.getId(), getString(R.string.api_key));
+                final String reviewsUrl = String.format("http://api.themoviedb.org/3/movie/%s/reviews?api_key=%s", movie.getId(), getString(R.string.api_key));
+
+                new FetchJsonTrailers(getFragmentManager().findFragmentById(R.id.details_fragment), trailersUrl).execute();
+                new FetchJsonReviews(getFragmentManager().findFragmentById(R.id.details_fragment), reviewsUrl).execute();
 
                 new PosterLoader().execute(movie);
             } catch (Exception e){
@@ -150,19 +151,47 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
     }
 
     @Override
-    public void onVideosFetched(JSONObject videosJson) {
+    public void onFetchedJsonReviews(JSONObject fetchedJsonReviews) {
 
         try {
-            JSONArray trailersArray = videosJson.getJSONArray("results");
-            TextView trailerView;
-            if(trailersArray.length() > 0){
-                for (int i = 0; i < trailersArray.length(); i++){
-                    String trailerName = trailersArray.getJSONObject(i).getString("name");
+            JSONArray trailersArray = fetchedJsonReviews.getJSONArray("results");
+            if (trailersArray.length() > 0) {
+                for (int i = 0; i < trailersArray.length(); i++) {
+
+                    final String author = trailersArray.getJSONObject(i).getString("author");
+                    final String content = trailersArray.getJSONObject(i).getString("content");
+                    final String url = trailersArray.getJSONObject(i).getString("url");
+
+                    LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                    View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
+
+                    ((TextView) reviewLayout.findViewById(R.id.review_author)).setText(author);
+                    ((TextView) reviewLayout.findViewById(R.id.review_content)).setText(content);
+                    ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(url);
+
+                    reviewsLayout.addView(reviewLayout);
+
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onFetchedJsonTrailers(JSONObject fetchedJsonTrailers) {
+        try {
+            JSONArray trailersArray = fetchedJsonTrailers.getJSONArray("results");
+            if (trailersArray.length() > 0) {
+                for (int i = 0; i < trailersArray.length(); i++) {
+
+                    final String trailerName = trailersArray.getJSONObject(i).getString("name");
                     final String trailerLink = YOUTUBE_BASE_URL + trailersArray.getJSONObject(i).getString("key");
 
                     LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                     View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
-                    ((TextView)trailerLayout.findViewById(R.id.trailer_title)).setText(trailerName);
+                    ((TextView) trailerLayout.findViewById(R.id.trailer_title)).setText(trailerName);
                     (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -175,8 +204,7 @@ public class DetailActivityFragment extends Fragment implements FetchVideosJson.
                     });
                     trailersLayout.addView(trailerLayout);
 
-                    View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
-                    reviewsLayout.addView(reviewLayout);
+
 
                 }
             }

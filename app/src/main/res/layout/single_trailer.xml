@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/trailer_play"
             android:layout_margin="5dp"
-            android:src="@android:drawable/ic_media_play"
+            android:src="@drawable/ic_play_arrow_black_48dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
