@@ -111,10 +111,9 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
-
-
         inflater.inflate(R.layout.fragment_detail, container, true);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
         gridView = (GridView) rootView.findViewById(R.id.main_fragment_gridview);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
