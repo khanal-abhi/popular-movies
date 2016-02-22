@@ -1,5 +1,7 @@
 package co.khanal.popularmovies;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -34,6 +36,7 @@ public class Movie implements Parcelable{
     private String synopsis;
     private double userRating;
     private String releaseDate;
+    private Bitmap bitmap;
 
     public String getId(){
         return String.valueOf(id);
@@ -91,6 +94,22 @@ public class Movie implements Parcelable{
         this.releaseDate = releaseDate == null ? "" : releaseDate;
     }
 
+    public Movie(long id, String originalTitle, byte[] image, String synopsis, double userRating, String releaseDate) {
+        this.id = id;
+        this.originalTitle = originalTitle == null ? "UNKNOWN TITLE" : originalTitle;
+        this.synopsis = synopsis == null ? "No data found." : synopsis;
+        this.userRating = userRating == 0 ? 5 : userRating;
+        this.releaseDate = releaseDate == null ? "" : releaseDate;
+        this.bitmap = byteArrayToBitmap(image);
+        this.imageUri = null;
+    }
+
+    public Bitmap byteArrayToBitmap(byte[] bytes){
+        return bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+
+
     @Override
     public String toString() {
         return "id: " + id +
@@ -146,4 +165,7 @@ public class Movie implements Parcelable{
         Movie getMovie();
     }
 
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
 }

@@ -79,6 +79,7 @@ public class LoadMoviesFromApi extends AsyncTask<String[], Void, Movie[]> {
 
         } catch (Exception e){
             e.printStackTrace();
+            return null;
         }
         finally {
             if(bufferedReader != null){

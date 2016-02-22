@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 
 /**
@@ -163,13 +164,18 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
     @Override
     public void onReceiveMovies(Movie[] movies) {
 
-        gridView.setAdapter(new GridViewAdapter(getContext(), R.layout.grid_item, movies));
+        if(movies != null){
+            gridView.setAdapter(new GridViewAdapter(getContext(), R.layout.grid_item, movies));
 
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Movie.MOVIE_KEY,movies[0]);
-        bundle.putBoolean(CLICKED, false);
-        if(getActivity() != null){
-            ((MainActivityFragmentListener)getActivity()).OnMessageFromMainActivityFragment(bundle);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Movie.MOVIE_KEY,movies[0]);
+            bundle.putBoolean(CLICKED, false);
+            if(getActivity() != null){
+                ((MainActivityFragmentListener)getActivity()).OnMessageFromMainActivityFragment(bundle);
+            }
+        } else {
+//            I am proud of this one :) If there is no connection, it will eventually try to load the local movies, Offline - First!
+            Toast.makeText(getContext(), "Looks like we are having some connections issues. Are you sure you are connected to the internet?", Toast.LENGTH_LONG).show();
         }
     }
 

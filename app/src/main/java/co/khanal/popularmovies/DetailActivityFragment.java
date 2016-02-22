@@ -5,13 +5,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 
-import co.khanal.FetchJson;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -41,6 +40,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
     private LinearLayout trailersLayout;
     private LinearLayout reviewsLayout;
+    private ScrollView scrollView;
 
     private Movie movie;
 
@@ -49,7 +49,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         super.onSaveInstanceState(outState);
 
         if(movie == null){
-            throw new NullPointerException("Movie cannot be null, EVER!");
+//            throw new NullPointerException("Movie cannot be null, EVER!");
         }
         outState.putParcelable(Movie.MOVIE_KEY, movie);
     }
@@ -60,12 +60,18 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
-            loadMovie(movie);
+           loadNonNullMovie(movie, savedInstanceState);
         } else {
             movie = ((Movie.MovieProvider) getActivity()).getMovie();
-            if (movie != null) {
-                loadMovie(movie);
-            }
+            loadNonNullMovie(movie, savedInstanceState);
+        }
+    }
+
+    private void loadNonNullMovie(Movie movie, Bundle savedInstanceState){
+        if (movie != null) {
+            loadMovie(movie);
+        } else {
+            scrollView.setVisibility(View.GONE);
         }
     }
 
@@ -135,6 +141,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         trailersLayout = (LinearLayout) rootView.findViewById(R.id.main_layout_for_trailers);
         reviewsLayout = (LinearLayout) rootView.findViewById(R.id.main_layout_for_reviews);
+
+        scrollView = (ScrollView) rootView.findViewById(R.id.details_scroll_view);
 
         addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
