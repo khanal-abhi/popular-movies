@@ -1,7 +1,5 @@
 package co.khanal.popularmovies;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -10,6 +8,8 @@ import android.os.Parcelable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by abhi on 2/18/16.
@@ -26,6 +26,7 @@ public class Movie implements Parcelable{
     private static final String SYNOPSIS = "overview";
     private static final String USER_RATING = "vote_average";
     private static final String RELEASE_DATE = "release_date";
+    private static final String BYTES_ARRAY = "bytes_Array";
 
 
     public static final String MOVIE_KEY = "movie";
@@ -36,10 +37,78 @@ public class Movie implements Parcelable{
     private String synopsis;
     private double userRating;
     private String releaseDate;
-    private Bitmap bitmap;
+    private byte[] bytesArray;
 
-    public String getId(){
-        return String.valueOf(id);
+    private List<Review> reviews;
+    private List<Trailer> trailers;
+
+    public static String getID() {
+        return ID;
+    }
+
+    public static String getTITLE() {
+        return TITLE;
+    }
+
+    public static String getSYNOPSIS() {
+        return SYNOPSIS;
+    }
+
+    public static String getMovieKey() {
+        return MOVIE_KEY;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public void setUserRating(double userRating) {
+        this.userRating = userRating;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setBytesArray(byte[] bytesArray) {
+        this.bytesArray = bytesArray;
+    }
+
+    public static Creator<Movie> getCREATOR() {
+        return CREATOR;
+    }
+
+    public List<Review> getReviews() {
+
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(List<Trailer> trailers) {
+        this.trailers = trailers;
+    }
+
+    public long getId(){
+        return id;
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -54,7 +123,8 @@ public class Movie implements Parcelable{
                     bundle.getString(IMAGE_URI),
                     bundle.getString(SYNOPSIS),
                     bundle.getDouble(USER_RATING),
-                    bundle.getString(RELEASE_DATE)
+                    bundle.getString(RELEASE_DATE),
+                    bundle.getByteArray(BYTES_ARRAY)
             );
 
         }
@@ -92,6 +162,7 @@ public class Movie implements Parcelable{
         this.synopsis = synopsis == null ? "No data found." : synopsis;
         this.userRating = userRating == 0 ? 5 : userRating;
         this.releaseDate = releaseDate == null ? "" : releaseDate;
+        this.bytesArray = null;
     }
 
     public Movie(long id, String originalTitle, byte[] image, String synopsis, double userRating, String releaseDate) {
@@ -100,15 +171,19 @@ public class Movie implements Parcelable{
         this.synopsis = synopsis == null ? "No data found." : synopsis;
         this.userRating = userRating == 0 ? 5 : userRating;
         this.releaseDate = releaseDate == null ? "" : releaseDate;
-        this.bitmap = byteArrayToBitmap(image);
+        this.bytesArray = image;
         this.imageUri = null;
     }
 
-    public Bitmap byteArrayToBitmap(byte[] bytes){
-        return bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    public Movie(long id, String originalTitle, String imageUri, String synopsis, double userRating, String releaseDate, byte[] bytesArray) {
+        this.id = id;
+        this.originalTitle = originalTitle == null ? "UNKNOWN TITLE" : originalTitle;
+        this.imageUri = imageUri == null ? Uri.parse("https://image.freepik.com/free-icon/sad-emoticon-square-face_318-58601.png") : Uri.parse(imageUri);
+        this.synopsis = synopsis == null ? "No data found." : synopsis;
+        this.userRating = userRating == 0 ? 5 : userRating;
+        this.releaseDate = releaseDate == null ? "" : releaseDate;
+        this.bytesArray = bytesArray;
     }
-
-
 
     @Override
     public String toString() {
@@ -165,7 +240,18 @@ public class Movie implements Parcelable{
         Movie getMovie();
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
+    public byte[] getBytesArray() {
+        return bytesArray;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return id == ((Movie) o).getId() &&
+                originalTitle == ((Movie) o).getOriginalTitle() &&
+                bytesArray == ((Movie) o).getBytesArray() &&
+                imageUri == ((Movie) o).imageUri &&
+                synopsis == ((Movie) o).getSynopsis() &&
+                userRating == ((Movie) o).getUserRating() &&
+                releaseDate == ((Movie) o).getReleaseDate();
     }
 }

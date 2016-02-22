@@ -44,6 +44,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
     private Movie movie;
 
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
