@@ -34,7 +34,7 @@ public class ReviewModel {
         db = dbHelper.getReadableDatabase();
         Review review = null;
         Cursor cursor = db.query(Contract.Reviews.TABLE_NAME, COLUMN_FILTERS, Contract.Reviews.ID +
-                "=" + id, null, null, null, null);
+                "=\"" + id + "\"", null, null, null, null);
         if(cursor != null){
             if(cursor.getCount() == 0){
                 return null;

@@ -160,6 +160,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "This will add the movie to an offline database!", Toast.LENGTH_SHORT).show();
+                new OfflineSaver(movie, trailers, reviews, getContext()).execute();
             }
         });
 

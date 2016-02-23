@@ -33,7 +33,7 @@ public class TrailerModel {
         db = dbHelper.getReadableDatabase();
         Trailer trailer = null;
         Cursor cursor = db.query(Contract.Trailers.TABLE_NAME, COLUMN_FILTERS, Contract.Trailers.ID +
-                "=" + id, null, null, null, null);
+                "=\"" + id + "\"", null, null, null, null);
         if(cursor != null){
             if(cursor.getCount() == 0){
                 return null;
