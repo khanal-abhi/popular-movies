@@ -17,6 +17,7 @@ import java.util.List;
 public class Trailer implements Parcelable {
 
     public static final String TRAILER_KEY = "trailer_key";
+    public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
     private long id;
     private String name;
@@ -116,7 +117,7 @@ public class Trailer implements Parcelable {
             trailerList.add(new Trailer(
                     resultsArray.getJSONObject(i).getLong(ID),
                     resultsArray.getJSONObject(i).getString(NAME),
-                    resultsArray.getJSONObject(i).getString(KEY),
+                    YOUTUBE_BASE_URL + resultsArray.getJSONObject(i).getString(KEY),
                     resultsArray.getJSONObject(i).getLong(MOVIE_ID)
             ));
         }
