@@ -4,6 +4,13 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by abhi on 2/22/16.
  */
@@ -100,5 +107,19 @@ public class Trailer implements Parcelable {
         bundle.putString(NAME, name);
         bundle.putString(KEY, key);
         bundle.putLong(MOVIE_ID, movie_id);
+    }
+
+    public static List<Trailer> parseTrailersJson(JSONObject trailers) throws JSONException {
+        List<Trailer> trailerList = new ArrayList<>();
+        JSONArray resultsArray = trailers.getJSONArray("results");
+        for(int i = 0; i < resultsArray.length(); i++){
+            trailerList.add(new Trailer(
+                    resultsArray.getJSONObject(i).getLong(ID),
+                    resultsArray.getJSONObject(i).getString(NAME),
+                    resultsArray.getJSONObject(i).getString(KEY),
+                    resultsArray.getJSONObject(i).getLong(MOVIE_ID)
+            ));
+        }
+        return trailerList;
     }
 }

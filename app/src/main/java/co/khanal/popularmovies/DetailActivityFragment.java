@@ -22,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -43,6 +45,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     private ScrollView scrollView;
 
     private Movie movie;
+    private List<Trailer> trailers;
+    private List<Review> reviews;
 
 
     @Override
@@ -50,9 +54,11 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         super.onSaveInstanceState(outState);
 
         if(movie == null){
-//            throw new NullPointerException("Movie cannot be null, EVER!");
+            throw new NullPointerException("Movie cannot be null, EVER!");
         }
         outState.putParcelable(Movie.MOVIE_KEY, movie);
+        outState.putParcelableArray(Trailer.TRAILER_KEY, getTrailersArray());
+        outState.putParcelableArray(Review.REVIEW_KEY, getReviewsArray());
     }
 
     @Override
@@ -61,14 +67,16 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         if(savedInstanceState != null){
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
-            loadNonNullMovie(movie, savedInstanceState);
+            addToTrailers((Trailer[])savedInstanceState.getParcelableArray(Trailer.TRAILER_KEY));
+            addToReviews((Review[])savedInstanceState.getParcelableArray(Review.REVIEW_KEY));
+            loadNonNullMovie(movie);
         } else {
             movie = ((Movie.MovieProvider) getActivity()).getMovie();
-            loadNonNullMovie(movie, savedInstanceState);
+            loadNonNullMovie(movie);
         }
     }
 
-    private void loadNonNullMovie(Movie movie, Bundle savedInstanceState){
+    private void loadNonNullMovie(Movie movie){
         if (movie != null) {
             loadMovie(movie);
         } else {
@@ -83,6 +91,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         if(bundle != null) {
             this.movie = bundle.getParcelable(Movie.MOVIE_KEY);
         }
+        trailers = new ArrayList<>();
+        reviews = new ArrayList<>();
         super.onCreate(savedInstanceState);
     }
 
@@ -238,6 +248,44 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
                     .error(R.drawable.ic_trending_up_white_48dp)
                     .into(poster);
 
+        }
+    }
+
+    private Trailer[] getTrailersArray(){
+        if(trailers != null){
+            int count = trailers.size();
+            Trailer[] trailersArray = new Trailer[count];
+            for(int i = 0; i< count; i++){
+                trailersArray[i] = trailers.get(i);
+            }
+            return trailersArray;
+        }
+        return new Trailer[0];
+    }
+
+    private Review[] getReviewsArray(){
+        if(reviews != null){
+            int count = reviews.size();
+            Review[] reviewsArray = new Review[count];
+            for(int i = 0; i< count; i++){
+                reviewsArray[i] = reviews.get(i);
+            }
+            return reviewsArray;
+        }
+        return new Review[0];
+    }
+
+    private void addToTrailers(Trailer[] trailersArray){
+        int count = trailersArray.length;
+        for(int i = 0; i < count; i++){
+            trailers.add(trailersArray[i]);
+        }
+    }
+
+    private void addToReviews(Review[] reviewsArray){
+        int count = reviewsArray.length;
+        for(int i = 0; i < count; i++){
+            reviews.add(reviewsArray[i]);
         }
     }
 }
