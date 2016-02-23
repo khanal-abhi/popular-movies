@@ -134,11 +134,19 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
                 new FetchJsonReviews(getFragmentManager().findFragmentById(R.id.details_fragment), reviewsUrl).execute();
 
 
-                Picasso.with(getContext())
-                        .load(movie.getImageUri())
-                        .placeholder(R.drawable.ic_thumb_up_white_48dp)
-                        .error(R.drawable.ic_trending_up_white_48dp)
-                        .into(poster);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                String currentPref = preferences.getString(getString(R.string.pref_sort_by_key), "");
+                if(currentPref.contentEquals(getString(R.string.favorites))){
+                    if(movie != null){
+                        poster.setImageBitmap(MovieModel.getBitmap(movie.getBytesArray()));
+                    }
+                } else {
+                    Picasso.with(getContext())
+                            .load(movie.getImageUri())
+                            .placeholder(R.drawable.ic_thumb_up_white_48dp)
+                            .error(R.drawable.ic_trending_up_white_48dp)
+                            .into(poster);
+                }
 
             } catch (Exception e){
                 e.printStackTrace();
