@@ -42,6 +42,13 @@ public class Review implements Parcelable {
         this.movie_id = movie_id;
     }
 
+    public Review(String id, String author, String content, String url) {
+        this.id = id;
+        this.author = author;
+        this.content = content;
+        this.url = url;
+    }
+
     protected Review(Parcel in) {
         Bundle bundle = in.readBundle();
         id = bundle.getString(ID);
@@ -134,8 +141,7 @@ public class Review implements Parcelable {
                     resultsArray.getJSONObject(i).getString(ID),
                     resultsArray.getJSONObject(i).getString(AUTHOR),
                     resultsArray.getJSONObject(i).getString(CONTENT),
-                    resultsArray.getJSONObject(i).getString(URL),
-                    resultsArray.getJSONObject(i).getLong(MOVIE_ID)
+                    resultsArray.getJSONObject(i).getString(URL)
             ));
         }
         return reviewList;

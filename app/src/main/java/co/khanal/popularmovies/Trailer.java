@@ -39,6 +39,12 @@ public class Trailer implements Parcelable {
         this.movie_id = movie_id;
     }
 
+    public Trailer(String id, String name, String key) {
+        this.id = id;
+        this.name = name;
+        this.key = key;
+    }
+
     protected Trailer(Parcel in) {
         Bundle bundle = in.readBundle();
         id = bundle.getString(ID);
@@ -118,8 +124,7 @@ public class Trailer implements Parcelable {
             trailerList.add(new Trailer(
                     resultsArray.getJSONObject(i).getString(ID),
                     resultsArray.getJSONObject(i).getString(NAME),
-                    YOUTUBE_BASE_URL + resultsArray.getJSONObject(i).getString(KEY),
-                    resultsArray.getJSONObject(i).getLong(MOVIE_ID)
+                    YOUTUBE_BASE_URL + resultsArray.getJSONObject(i).getString(KEY)
             ));
         }
         return trailerList;
