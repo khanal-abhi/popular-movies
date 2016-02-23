@@ -45,7 +45,7 @@ public class Contract {
         public static final String MOVIE_ID = "movie_id";
 
         public static final String CREATE_TABLE_STATEMENT = String.format(
-                "CREATE TABLE IF NOT EXISTS %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY ," +
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s INTEGER," +
@@ -69,7 +69,7 @@ public class Contract {
         public static final String MOVIE_ID = "movie_id";
 
         public static final String CREATE_TABLE_STATEMENT = String.format(
-                "CREATE TABLE IF NOT EXISTS %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY ," +
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s TEXT," +

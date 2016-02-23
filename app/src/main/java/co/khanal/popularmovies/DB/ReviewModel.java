@@ -30,7 +30,7 @@ public class ReviewModel {
         dbHelper = new PopularMoviesDBHelper(context);
     }
 
-    public Review getReview(long id){
+    public Review getReview(String id){
         db = dbHelper.getReadableDatabase();
         Review review = null;
         Cursor cursor = db.query(Contract.Reviews.TABLE_NAME, COLUMN_FILTERS, Contract.Reviews.ID +
@@ -41,7 +41,7 @@ public class ReviewModel {
             }
             cursor.moveToFirst();
             review = new Review(
-                    cursor.getLong(0),
+                    cursor.getString(0),
                     cursor.getString(1),
                     cursor.getString(2),
                     cursor.getString(3),
@@ -68,7 +68,7 @@ public class ReviewModel {
 
         cursor.close();
         dbHelper.close();
-        return getReview(id);
+        return getReview(review.getId());
     }
 
     public void deleteReview(Review review){
@@ -100,7 +100,7 @@ public class ReviewModel {
                 return reviews;
             do {
                 reviews.add(new Review(
-                        cursor.getLong(0),
+                        cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getString(3),

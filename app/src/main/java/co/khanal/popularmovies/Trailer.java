@@ -19,7 +19,7 @@ public class Trailer implements Parcelable {
     public static final String TRAILER_KEY = "trailer_key";
     public static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch?v=";
 
-    private long id;
+    private String id;
     private String name;
     private String key;
     private long movie_id;
@@ -32,7 +32,7 @@ public class Trailer implements Parcelable {
     public Trailer() {
     }
 
-    public Trailer(long id, String name, String key, long movie_id) {
+    public Trailer(String id, String name, String key, long movie_id) {
         this.id = id;
         this.name = name;
         this.key = key;
@@ -40,10 +40,11 @@ public class Trailer implements Parcelable {
     }
 
     protected Trailer(Parcel in) {
-        id = in.readLong();
-        name = in.readString();
-        key = in.readString();
-        movie_id = in.readLong();
+        Bundle bundle = in.readBundle();
+        id = bundle.getString(ID);
+        name = bundle.getString(NAME);
+        key = bundle.getString(KEY);
+        movie_id = bundle.getLong(MOVIE_ID);
     }
 
     public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
@@ -51,7 +52,7 @@ public class Trailer implements Parcelable {
         public Trailer createFromParcel(Parcel in) {
             Bundle bundle = in.readBundle();
             return new Trailer(
-                    bundle.getLong(ID),
+                    bundle.getString(ID),
                     bundle.getString(NAME),
                     bundle.getString(KEY),
                     bundle.getLong(MOVIE_ID)
@@ -64,11 +65,11 @@ public class Trailer implements Parcelable {
         }
     };
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -104,7 +105,7 @@ public class Trailer implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         Bundle bundle = new Bundle();
-        bundle.putLong(ID, id);
+        bundle.putString(ID, id);
         bundle.putString(NAME, name);
         bundle.putString(KEY, key);
         bundle.putLong(MOVIE_ID, movie_id);
@@ -115,7 +116,7 @@ public class Trailer implements Parcelable {
         JSONArray resultsArray = trailers.getJSONArray("results");
         for(int i = 0; i < resultsArray.length(); i++){
             trailerList.add(new Trailer(
-                    resultsArray.getJSONObject(i).getLong(ID),
+                    resultsArray.getJSONObject(i).getString(ID),
                     resultsArray.getJSONObject(i).getString(NAME),
                     YOUTUBE_BASE_URL + resultsArray.getJSONObject(i).getString(KEY),
                     resultsArray.getJSONObject(i).getLong(MOVIE_ID)

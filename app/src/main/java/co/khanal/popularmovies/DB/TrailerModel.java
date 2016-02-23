@@ -29,7 +29,7 @@ public class TrailerModel {
         dbHelper = new PopularMoviesDBHelper(context);
     }
 
-    public Trailer getTrailer(long id){
+    public Trailer getTrailer(String id){
         db = dbHelper.getReadableDatabase();
         Trailer trailer = null;
         Cursor cursor = db.query(Contract.Trailers.TABLE_NAME, COLUMN_FILTERS, Contract.Trailers.ID +
@@ -40,7 +40,7 @@ public class TrailerModel {
             }
             cursor.moveToFirst();
             trailer = new Trailer(
-                    cursor.getLong(0),
+                    cursor.getString(0),
                     cursor.getString(1),
                     cursor.getString(2),
                     cursor.getLong(3)
@@ -66,7 +66,7 @@ public class TrailerModel {
 
         cursor.close();
         dbHelper.close();
-        return getTrailer(id);
+        return getTrailer(trailer.getId());
     }
 
     public void deleteTrailer(Trailer trailer){
@@ -98,7 +98,7 @@ public class TrailerModel {
             cursor.moveToFirst();
             do {
                 trailers.add(new Trailer(
-                        cursor.getLong(0),
+                        cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getLong(3)

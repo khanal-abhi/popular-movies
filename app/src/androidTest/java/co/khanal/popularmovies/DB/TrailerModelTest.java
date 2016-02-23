@@ -34,14 +34,14 @@ public class TrailerModelTest extends AndroidTestCase {
         );
 
         trailer1 = new Trailer(
-                123,
+                "123",
                 "Abhi Khanal",
                 "hiyaaaaa",
                 43
         );
 
         trailer2 = new Trailer(
-                112323,
+                "112323",
                 "Munni Baba",
                 "Hello Derpette",
                 43

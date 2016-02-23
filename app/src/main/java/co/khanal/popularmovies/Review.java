@@ -24,7 +24,7 @@ public class Review implements Parcelable {
     private static String URL = "url";
     private static String MOVIE_ID = "movie_id";
 
-    private long id;
+    private String id;
     private String author;
     private String content;
     private String url;
@@ -34,7 +34,7 @@ public class Review implements Parcelable {
 
     }
 
-    public Review(long id, String author, String content, String url, long movie_id) {
+    public Review(String id, String author, String content, String url, long movie_id) {
         this.id = id;
         this.author = author;
         this.content = content;
@@ -43,11 +43,12 @@ public class Review implements Parcelable {
     }
 
     protected Review(Parcel in) {
-        id = in.readLong();
-        author = in.readString();
-        content = in.readString();
-        url = in.readString();
-        movie_id = in.readLong();
+        Bundle bundle = in.readBundle();
+        id = bundle.getString(ID);
+        author = bundle.getString(AUTHOR);
+        content = bundle.getString(CONTENT);
+        url = bundle.getString(URL);
+        movie_id = bundle.getLong(MOVIE_ID);
     }
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {
@@ -55,7 +56,7 @@ public class Review implements Parcelable {
         public Review createFromParcel(Parcel in) {
             Bundle bundle = in.readBundle();
             return new Review(
-                    bundle.getLong(ID),
+                    bundle.getString(ID),
                     bundle.getString(AUTHOR),
                     bundle.getString(CONTENT),
                     bundle.getString(URL),
@@ -69,11 +70,11 @@ public class Review implements Parcelable {
         }
     };
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -117,7 +118,7 @@ public class Review implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         Bundle bundle = new Bundle();
-        bundle.putLong(ID, id);
+        bundle.putString(ID, id);
         bundle.putString(AUTHOR, author);
         bundle.putString(CONTENT, content);
         bundle.putString(URL, url);
@@ -130,7 +131,7 @@ public class Review implements Parcelable {
         JSONArray resultsArray = reviews.getJSONArray("results");
         for(int i = 0; i < resultsArray.length(); i++){
             reviewList.add(new Review(
-                    resultsArray.getJSONObject(i).getLong(ID),
+                    resultsArray.getJSONObject(i).getString(ID),
                     resultsArray.getJSONObject(i).getString(AUTHOR),
                     resultsArray.getJSONObject(i).getString(CONTENT),
                     resultsArray.getJSONObject(i).getString(URL),

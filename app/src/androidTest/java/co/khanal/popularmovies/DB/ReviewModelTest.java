@@ -34,7 +34,7 @@ public class ReviewModelTest extends AndroidTestCase {
         );
 
         review1 = new Review(
-                123,
+                "123",
                 "Abhi Khanal",
                 "Hello World",
                 "Hello.World",
@@ -42,7 +42,7 @@ public class ReviewModelTest extends AndroidTestCase {
         );
 
         review2 = new Review(
-                112323,
+                "1234",
                 "Munni Baba",
                 "Hello World",
                 "Hello.World",
