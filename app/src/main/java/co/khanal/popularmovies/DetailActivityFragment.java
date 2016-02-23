@@ -174,25 +174,23 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     public void onFetchedJsonReviews(JSONObject fetchedJsonReviews) {
 
         try {
-            JSONArray trailersArray = fetchedJsonReviews.getJSONArray("results");
-            if (trailersArray.length() > 0) {
-                for (int i = 0; i < trailersArray.length(); i++) {
+            reviews = Review.parseReviewsJson(fetchedJsonReviews);
 
-                    final String author = trailersArray.getJSONObject(i).getString("author");
-                    final String content = trailersArray.getJSONObject(i).getString("content");
-                    final String url = trailersArray.getJSONObject(i).getString("url");
+            for(Review review : reviews){
 
-                    LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                    View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
+                review.setMovie_id(movie.getId());
 
-                    ((TextView) reviewLayout.findViewById(R.id.review_author)).setText(author);
-                    ((TextView) reviewLayout.findViewById(R.id.review_content)).setText(content);
-                    ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(url);
+                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
 
-                    reviewsLayout.addView(reviewLayout);
+                ((TextView) reviewLayout.findViewById(R.id.review_author)).setText(review.getAuthor());
+                ((TextView) reviewLayout.findViewById(R.id.review_content)).setText(review.getContent());
+                ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(review.getUrl());
 
-                }
+                reviewsLayout.addView(reviewLayout);
+
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -201,34 +199,32 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
     @Override
     public void onFetchedJsonTrailers(JSONObject fetchedJsonTrailers) {
+
         try {
-            JSONArray trailersArray = fetchedJsonTrailers.getJSONArray("results");
-            if (trailersArray.length() > 0) {
-                for (int i = 0; i < trailersArray.length(); i++) {
+            trailers = Trailer.parseTrailersJson(fetchedJsonTrailers);
 
-                    final String trailerName = trailersArray.getJSONObject(i).getString("name");
-                    final String trailerLink = YOUTUBE_BASE_URL + trailersArray.getJSONObject(i).getString("key");
-
-                    LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                    View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
-                    ((TextView) trailerLayout.findViewById(R.id.trailer_title)).setText(trailerName);
-                    (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setData(Uri.parse(trailerLink));
-                            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                                startActivity(intent);
-                            }
+            for (final Trailer trailer : trailers){
+                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+                View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
+                ((TextView) trailerLayout.findViewById(R.id.trailer_title)).setText(trailer.getName());
+                (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(trailer.getKey()));
+                        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                            startActivity(intent);
                         }
-                    });
-                    trailersLayout.addView(trailerLayout);
-
-
-
-                }
+                    }
+                });
+                trailersLayout.addView(trailerLayout);
             }
-        } catch (JSONException e) {
+
+            for (Trailer trailer : trailers){
+                trailer.setMovie_id(movie.getId());
+            }
+
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
