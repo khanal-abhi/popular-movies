@@ -2,6 +2,7 @@ package co.khanal.popularmovies;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +62,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         super.onSaveInstanceState(outState);
 
         if(movie == null){
-            throw new NullPointerException("Movie cannot be null, EVER!");
+            loadMovie(movie);
+            return;
         }
         outState.putParcelable(Movie.MOVIE_KEY, movie);
         outState.putParcelableArray(Trailer.TRAILER_KEY, getTrailersArray());
@@ -75,20 +78,13 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
             addToTrailers((Trailer[])savedInstanceState.getParcelableArray(Trailer.TRAILER_KEY));
             addToReviews((Review[])savedInstanceState.getParcelableArray(Review.REVIEW_KEY));
-            loadNonNullMovie(movie);
+            loadMovie(movie);
         } else {
             movie = ((Movie.MovieProvider) getActivity()).getMovie();
-            loadNonNullMovie(movie);
+            loadMovie(movie);
         }
     }
 
-    private void loadNonNullMovie(Movie movie){
-        if (movie != null) {
-            loadMovie(movie);
-        } else {
-            scrollView.setVisibility(View.GONE);
-        }
-    }
 
 
     @Override
@@ -130,6 +126,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
             } catch (Exception e){
                 e.printStackTrace();
             }
+        } else {
+            scrollView.setVisibility(View.GONE);
         }
     }
 
@@ -145,13 +143,26 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     }
 
     public void loadMovieFromDB(Movie movie){
+
+        addToFavorite.setVisibility(View.GONE);
+
         MovieModel movieModel = new MovieModel(getContext());
         TrailerModel trailerModel = new TrailerModel(getContext());
         ReviewModel reviewModel = new ReviewModel(getContext());
-//        try {
-//            this.movie = movieModel.getMovie(movie.getId());
-//            this.trailers =
-//        }
+
+        this.movie = movieModel.getMovie(movie.getId());
+        this.trailers = trailerModel.getTrailersForMovie(movie.getId());
+        this.reviews = reviewModel.getReviewsForMovie(movie.getId());
+
+        trailersLayout.removeAllViews();
+        loadTrailers();
+
+        reviewsLayout.removeAllViews();
+        loadReviews();
+
+        loadBitmapToImageView();
+
+
     }
 
     @Override
@@ -175,7 +186,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = ((BitmapDrawable)poster.getDrawable()).getBitmap();
+                Bitmap bitmap = ((BitmapDrawable) poster.getDrawable()).getBitmap();
                 movie.setBytesArray(MovieModel.getBytes(bitmap));
                 new OfflineSaver(movie, trailers, reviews, getContext()).execute();
             }
@@ -194,20 +205,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         try {
             reviews = Review.parseReviewsJson(fetchedJsonReviews);
 
-            for(Review review : reviews){
-
-                review.setMovie_id(movie.getId());
-
-                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
-
-                ((TextView) reviewLayout.findViewById(R.id.review_author)).setText(review.getAuthor());
-                ((TextView) reviewLayout.findViewById(R.id.review_content)).setText(review.getContent());
-                ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(review.getUrl());
-
-                reviewsLayout.addView(reviewLayout);
-
-            }
+            loadReviews();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -220,23 +218,7 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         try {
             trailers = Trailer.parseTrailersJson(fetchedJsonTrailers);
-
-            for (final Trailer trailer : trailers){
-                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-                View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
-                ((TextView) trailerLayout.findViewById(R.id.trailer_title)).setText(trailer.getName());
-                (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(trailer.getKey()));
-                        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                            startActivity(intent);
-                        }
-                    }
-                });
-                trailersLayout.addView(trailerLayout);
-            }
+            loadTrailers();
 
             for (Trailer trailer : trailers){
                 trailer.setMovie_id(movie.getId());
@@ -244,6 +226,47 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
         } catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void loadBitmapToImageView(){
+        Bitmap bitmap = BitmapFactory.decodeByteArray(movie.getBytesArray(), 0, movie.getBytesArray().length);
+        poster.setImageBitmap(bitmap);
+    }
+
+    public void loadTrailers(){
+        for (final Trailer trailer : trailers){
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            View trailerLayout = layoutInflater.inflate(R.layout.single_trailer, null);
+            ((TextView) trailerLayout.findViewById(R.id.trailer_title)).setText(trailer.getName());
+            (trailerLayout.findViewById(R.id.trailer_play)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(trailer.getKey()));
+                    if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                        startActivity(intent);
+                    }
+                }
+            });
+            trailersLayout.addView(trailerLayout);
+        }
+    }
+
+    public void loadReviews(){
+        for(Review review : reviews){
+
+            review.setMovie_id(movie.getId());
+
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            View reviewLayout = layoutInflater.inflate(R.layout.single_review, null);
+
+            ((TextView) reviewLayout.findViewById(R.id.review_author)).setText(review.getAuthor());
+            ((TextView) reviewLayout.findViewById(R.id.review_content)).setText(review.getContent());
+            ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(review.getUrl());
+
+            reviewsLayout.addView(reviewLayout);
+
         }
     }
 
