@@ -10,6 +10,8 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import co.khanal.popularmovies.DB.MovieModel;
+
 /**
  * Created by abhi on 2/18/16.
  * Custom GridView adapter that extends ArrayAdapter<Movie>. It takes the movies, extracts the
@@ -70,11 +72,15 @@ public class GridViewAdapter extends ArrayAdapter<Movie> {
 
 
         Movie movie = movies[position];
-        Picasso.with(appContext)
-                .load(movie.getImageUri())
-                .placeholder(R.drawable.ic_thumb_up_white_48dp)
-                .error(R.drawable.ic_trending_up_white_48dp)
-                .into(placeHolder.imageView);
+        if(movie.getBytesArray() != null){
+            placeHolder.imageView.setImageBitmap(MovieModel.getBitmap(movie.getBytesArray()));
+        } else {
+            Picasso.with(appContext)
+                    .load(movie.getImageUri())
+                    .placeholder(R.drawable.ic_thumb_up_white_48dp)
+                    .error(R.drawable.ic_trending_up_white_48dp)
+                    .into(placeHolder.imageView);
+        }
 
         return grid_item;
     }

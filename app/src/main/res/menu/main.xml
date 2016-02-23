@@ -6,12 +6,18 @@
     <item
         android:title="Popularity"
         android:id="@+id/popularity"
-        android:icon="@drawable/ic_trending_up_black_48dp"
+        android:icon="@drawable/ic_trending_up_white_48dp"
         app:showAsAction="always"/>
 
     <item
         android:title="Ratings"
         android:id="@+id/ratings"
-        android:icon="@drawable/ic_thumb_up_black_48dp"
+        android:icon="@drawable/ic_thumb_up_white_48dp"
+        app:showAsAction="always"/>
+
+    <item
+        android:title="Favorites"
+        android:id="@+id/favorites"
+        android:icon="@drawable/ic_favorite_white_48dp"
         app:showAsAction="always"/>
 </menu>

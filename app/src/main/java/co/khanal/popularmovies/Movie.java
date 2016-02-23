@@ -206,7 +206,7 @@ public class Movie implements Parcelable{
         Bundle bundle = new Bundle();
         bundle.putLong(ID, id);
         bundle.putString(TITLE, originalTitle);
-        bundle.putString(IMAGE_URI, imageUri.toString());
+        bundle.putString(IMAGE_URI, imageUri == null ? "" : imageUri.toString());
         bundle.putString(SYNOPSIS, synopsis);
         bundle.putDouble(USER_RATING, userRating);
         bundle.putString(RELEASE_DATE, releaseDate);

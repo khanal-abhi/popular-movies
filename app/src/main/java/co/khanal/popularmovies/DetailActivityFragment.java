@@ -1,12 +1,14 @@
 package co.khanal.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,10 +80,19 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
             movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
             addToTrailers((Trailer[])savedInstanceState.getParcelableArray(Trailer.TRAILER_KEY));
             addToReviews((Review[])savedInstanceState.getParcelableArray(Review.REVIEW_KEY));
-            loadMovie(movie);
+
         } else {
             movie = ((Movie.MovieProvider) getActivity()).getMovie();
+        }
+
+        if(movie == null){
             loadMovie(movie);
+        } else {
+            if(movie.getBytesArray() != null){
+                loadMovieFromDB(movie);
+            } else {
+                loadMovie(movie);
+            }
         }
     }
 
@@ -122,7 +133,13 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
                 new FetchJsonTrailers(getFragmentManager().findFragmentById(R.id.details_fragment), trailersUrl).execute();
                 new FetchJsonReviews(getFragmentManager().findFragmentById(R.id.details_fragment), reviewsUrl).execute();
 
-                new PosterLoader().execute(movie);
+
+                Picasso.with(getContext())
+                        .load(movie.getImageUri())
+                        .placeholder(R.drawable.ic_thumb_up_white_48dp)
+                        .error(R.drawable.ic_trending_up_white_48dp)
+                        .into(poster);
+
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -144,24 +161,41 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
 
     public void loadMovieFromDB(Movie movie){
 
-        addToFavorite.setVisibility(View.GONE);
+        if(movie == null){
+            loadMovie(movie);
+            return;
+        }
 
         MovieModel movieModel = new MovieModel(getContext());
         TrailerModel trailerModel = new TrailerModel(getContext());
         ReviewModel reviewModel = new ReviewModel(getContext());
 
-        this.movie = movieModel.getMovie(movie.getId());
-        this.trailers = trailerModel.getTrailersForMovie(movie.getId());
-        this.reviews = reviewModel.getReviewsForMovie(movie.getId());
+        try {
+            this.movie = movieModel.getMovie(movie.getId());
+            this.trailers = trailerModel.getTrailersForMovie(movie.getId());
+            this.reviews = reviewModel.getReviewsForMovie(movie.getId());
 
-        trailersLayout.removeAllViews();
-        loadTrailers();
+            movieTitle.setText(movie.getOriginalTitle());
+            synopsis.setText(movie.getSynopsis());
+            DecimalFormat df = new DecimalFormat("0.0");
+            String ratingString = String.valueOf(df.format(movie.getUserRating()) + "/10");
+            movieRating.setText(ratingString);
+            try {
+                movieYear.setText(movie.getReleaseDate().substring(0,3));
+            } catch (StringIndexOutOfBoundsException e) {
+                movieYear.setText("Unknown");
+            }
 
-        reviewsLayout.removeAllViews();
-        loadReviews();
+            trailersLayout.removeAllViews();
+            loadTrailers();
 
-        loadBitmapToImageView();
+            reviewsLayout.removeAllViews();
+            loadReviews();
 
+            loadBitmapToImageView();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -186,11 +220,16 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = ((BitmapDrawable) poster.getDrawable()).getBitmap();
-                movie.setBytesArray(MovieModel.getBytes(bitmap));
-                new OfflineSaver(movie, trailers, reviews, getContext()).execute();
+                try {
+                    Bitmap bitmap = ((BitmapDrawable) poster.getDrawable()).getBitmap();
+                    movie.setBytesArray(MovieModel.getBytes(bitmap));
+                    new OfflineSaver(movie, trailers, reviews, getContext()).execute();
+                }catch (NullPointerException e){
+                    Toast.makeText(getContext(), "Please wait while the poster loads completely", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         if(movie != null){
             loadMovie(movie);
@@ -230,8 +269,10 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     }
 
     public void loadBitmapToImageView(){
-        Bitmap bitmap = BitmapFactory.decodeByteArray(movie.getBytesArray(), 0, movie.getBytesArray().length);
-        poster.setImageBitmap(bitmap);
+        if(movie != null) {
+            Bitmap bitmap = MovieModel.getBitmap(movie.getBytesArray());
+            poster.setImageBitmap(bitmap);
+        }
     }
 
     public void loadTrailers(){
@@ -266,24 +307,6 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
             ((TextView) reviewLayout.findViewById(R.id.review_url)).setText(review.getUrl());
 
             reviewsLayout.addView(reviewLayout);
-
-        }
-    }
-
-    public class PosterLoader extends AsyncTask<Movie, Void, Uri>{
-
-        @Override
-        protected Uri doInBackground(Movie... params) {
-            return params[0].getImageUri();
-        }
-
-        @Override
-        protected void onPostExecute(Uri uri) {
-            Picasso.with(getContext())
-                    .load(uri)
-                    .placeholder(R.drawable.ic_thumb_up_white_48dp)
-                    .error(R.drawable.ic_trending_up_white_48dp)
-                    .into(poster);
 
         }
     }

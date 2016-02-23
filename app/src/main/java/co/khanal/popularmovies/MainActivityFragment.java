@@ -1,6 +1,8 @@
 package co.khanal.popularmovies;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -12,7 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.util.List;
+
+import co.khanal.popularmovies.DB.MovieModel;
 
 
 /**
@@ -29,6 +36,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
     private int grid_view_item = -1;
 
     private GridView gridView;
+    private Movie[] movies;
 
     public MainActivityFragment() {
     }
@@ -39,6 +47,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
         // outState ready for consumption
 
+        outState.putParcelableArray(Movie.MOVIE_KEY, movies);
         outState.putParcelable(GRID_VIEW_STATE, gridView.onSaveInstanceState());
         outState.putInt(GRID_VIEW_FIRST_VISIBLE_ITEM, grid_view_item == -1 ? gridView.getFirstVisiblePosition() : grid_view_item);
     }
@@ -48,7 +57,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         super.onActivityCreated(savedInstanceState);
 
         if(savedInstanceState != null){
-
+            movies = (Movie[])savedInstanceState.getParcelableArray(Movie.MOVIE_KEY);
             gridView.onRestoreInstanceState(savedInstanceState.getParcelable(GRID_VIEW_STATE));
             gridView.setSelection(savedInstanceState.getInt(GRID_VIEW_FIRST_VISIBLE_ITEM));
         }
@@ -77,6 +86,10 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
             case R.id.popularity:
                 sortByPopular();
+                break;
+
+            case R.id.favorites:
+                sortByFavorites();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -108,6 +121,21 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
     }
 
+    private void sortByFavorites(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentOrder = pref.getString(getString(R.string.pref_sort_by_key), "");
+        if(currentOrder.contentEquals(getString(R.string.favorites))){
+            return;
+        }
+        MovieModel movieModel = new MovieModel(getContext());
+        if( movieModel.getMovies().size() == 0)
+            return;
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(getString(R.string.pref_sort_by_key), getString(R.string.favorites));
+        editor.apply();
+        loadMoviesFromDB();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -120,14 +148,17 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getContext(),"Yo",Toast.LENGTH_SHORT).show();
 
                 Bundle bundle = new Bundle();
-                Movie movie = (Movie) parent.getAdapter().getItem(position);
+                Movie movie = movies[position];
                 bundle.putParcelable(Movie.MOVIE_KEY, movie);
                 bundle.putBoolean(CLICKED, true);
                 MainActivityFragmentListener activity = (MainActivityFragmentListener) getActivity();
-                if(activity != null)
+                if (activity != null)
                     activity.OnMessageFromMainActivityFragment(bundle);
+
+//                grid_view_item saves the state of scroll
                 grid_view_item = position;
             }
 
@@ -135,7 +166,13 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
 
         gridView.setNumColumns(getResources().getInteger(R.integer.grid_columns));
-        setupLoad();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String currentPref = preferences.getString(getString(R.string.pref_sort_by_key), "");
+        if(currentPref.contentEquals(getString(R.string.favorites))){
+            loadMoviesFromDB();
+        } else {
+            setupLoad();
+        }
 
         return rootView;
     }
@@ -162,7 +199,7 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
     @Override
     public void onReceiveMovies(Movie[] movies) {
-
+        this.movies = movies;
         if(movies != null){
             gridView.setAdapter(new GridViewAdapter(getContext(), R.layout.grid_item, movies));
 
@@ -175,6 +212,26 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
         } else {
 //            I am proud of this one :) If there is no connection, it will eventually try to load the local movies, Offline - First!
             Toast.makeText(getContext(), "Looks like we are having some connections issues. Are you sure you are connected to the internet?", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void loadMoviesFromDB(){
+        MovieModel movieModel = new MovieModel(getContext());
+        List<Movie> movieList = movieModel.getMovies();
+        int i = 0;
+        movies = new Movie[movieList.size()];
+        if (movies.length == 0)
+            return;
+        for(Movie movie : movieList){
+            movies[i] = movie;
+            i++;
+        }
+        gridView.setAdapter(new GridViewAdapter(getContext(), R.layout.grid_item, movies));
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Movie.MOVIE_KEY,movies[0]);
+        bundle.putBoolean(CLICKED, false);
+        if(getActivity() != null){
+            ((MainActivityFragmentListener)getActivity()).OnMessageFromMainActivityFragment(bundle);
         }
     }
 

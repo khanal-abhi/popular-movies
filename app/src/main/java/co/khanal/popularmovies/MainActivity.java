@@ -1,8 +1,11 @@
 package co.khanal.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
         if(savedInstanceState != null){
             getSupportFragmentManager().getFragment(savedInstanceState, MAIN_FRAG_KEY);
             getSupportFragmentManager().getFragment(savedInstanceState, DETAIL_FRAG_KEY);
+            movie = savedInstanceState.getParcelable(Movie.MOVIE_KEY);
         }
     }
 
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
         if(detailActivityFragment != null)
             getSupportFragmentManager().putFragment(outState, DETAIL_FRAG_KEY, detailActivityFragment);
 
+        outState.putParcelable(Movie.MOVIE_KEY, movie);
+
     }
 
     @Override
@@ -51,22 +57,36 @@ public class MainActivity extends AppCompatActivity implements Movie.MovieProvid
 
     @Override
     public void OnMessageFromMainActivityFragment(Bundle bundle) {
-        Toast.makeText(getApplicationContext(), "Movie Sent", Toast.LENGTH_SHORT).show();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        DetailActivityFragment detailActivityFragment = (DetailActivityFragment)fragmentManager.findFragmentById(R.id.details_fragment);
         movie = bundle.getParcelable(Movie.MOVIE_KEY);
         boolean clicked = bundle.getBoolean(MainActivityFragment.CLICKED);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment detailActivityFragment = fragmentManager.findFragmentById(R.id.details_fragment);
-        if(detailActivityFragment != null && movie != null) {
-//            DetailActivityFragment exists so its a dual pane layout
+        if(movie.getBytesArray() != null)
+            isFromDb(movie, clicked, detailActivityFragment);
+        else isFromUrl(movie, clicked, detailActivityFragment);
+    }
 
-            ((DetailActivityFragment) detailActivityFragment).loadMovie(movie, clicked);
-
-        } else if (movie != null && bundle.getBoolean(MainActivityFragment.CLICKED)){
-//            Only start DetailActivity if movie exists and the movie was clicked on MainActivityFragment
-
-            Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-            intent.putExtra(Movie.MOVIE_KEY, movie);
-            startActivity(intent);
+    public void isFromDb(Movie movie, boolean clicked, DetailActivityFragment fragment){
+        if(fragment != null){
+            fragment.loadMovieFromDB(movie);
+        } else if (clicked){
+            isClicked(movie);
         }
     }
+
+    public void isFromUrl(Movie movie, boolean clicked, DetailActivityFragment fragment){
+        if(fragment != null){
+            fragment.loadMovie(movie);
+        } else if (clicked){
+            isClicked(movie);
+        }
+    }
+
+    public void isClicked(Movie movie){
+        Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+        intent.putExtra(Movie.MOVIE_KEY, movie);
+        startActivity(intent);
+    }
+
 }
