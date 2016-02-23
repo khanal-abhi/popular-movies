@@ -51,6 +51,30 @@ public class TrailerModel {
         return trailer;
     }
 
+    public List<Trailer> getTrailersForMovie(long movie_id){
+        List<Trailer> trailers = new ArrayList<>();
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(Contract.Trailers.TABLE_NAME, COLUMN_FILTERS, Contract.Reviews.MOVIE_ID + "=" + movie_id,
+                null,
+                null,
+                null,
+                null);
+        if(cursor != null){
+            if(cursor.getCount() != 0){
+                cursor.moveToFirst();
+                do {
+                    trailers.add(new Trailer(
+                            cursor.getString(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getLong(3)
+                    ));
+                } while (cursor.moveToNext());
+            }
+        }
+        return trailers;
+    }
+
     public Trailer addTrailer(Trailer trailer) throws SQLException {
         db = dbHelper.getWritableDatabase();
         ContentValues contentValues = getContentValues(trailer);

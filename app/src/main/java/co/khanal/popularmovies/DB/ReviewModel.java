@@ -86,8 +86,33 @@ public class ReviewModel {
     public void updateReview(Review review){
         db = dbHelper.getWritableDatabase();
         ContentValues contentValues = getContentValues(review);
-        db.update(Contract.Reviews.TABLE_NAME, contentValues, Contract.Reviews.ID+"="+review.getId(), null);
+        db.update(Contract.Reviews.TABLE_NAME, contentValues, Contract.Reviews.ID + "=" + review.getId(), null);
         db.close();
+    }
+
+    public List<Review> getReviewsForMovie(long movie_id){
+        List<Review> reviews = new ArrayList<>();
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(Contract.Reviews.TABLE_NAME, COLUMN_FILTERS, Contract.Reviews.MOVIE_ID + "=" + movie_id,
+                null,
+                null,
+                null,
+                null);
+        if(cursor != null){
+            if(cursor.getCount() != 0){
+                cursor.moveToFirst();
+                do {
+                    reviews.add(new Review(
+                            cursor.getString(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getLong(4)
+                    ));
+                } while (cursor.moveToNext());
+            }
+        }
+        return reviews;
     }
 
     public List<Review> getReviews(){

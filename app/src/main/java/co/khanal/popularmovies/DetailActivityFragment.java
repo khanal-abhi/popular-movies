@@ -1,6 +1,8 @@
 package co.khanal.popularmovies;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +26,10 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import co.khanal.popularmovies.DB.MovieModel;
+import co.khanal.popularmovies.DB.ReviewModel;
+import co.khanal.popularmovies.DB.TrailerModel;
 
 
 /**
@@ -138,6 +144,16 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
     public DetailActivityFragment() {
     }
 
+    public void loadMovieFromDB(Movie movie){
+        MovieModel movieModel = new MovieModel(getContext());
+        TrailerModel trailerModel = new TrailerModel(getContext());
+        ReviewModel reviewModel = new ReviewModel(getContext());
+//        try {
+//            this.movie = movieModel.getMovie(movie.getId());
+//            this.trailers =
+//        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -159,7 +175,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
         addToFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "This will add the movie to an offline database!", Toast.LENGTH_SHORT).show();
+                Bitmap bitmap = ((BitmapDrawable)poster.getDrawable()).getBitmap();
+                movie.setBytesArray(MovieModel.getBytes(bitmap));
                 new OfflineSaver(movie, trailers, reviews, getContext()).execute();
             }
         });
