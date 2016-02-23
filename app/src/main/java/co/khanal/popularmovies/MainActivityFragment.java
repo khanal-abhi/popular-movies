@@ -148,7 +148,6 @@ public class MainActivityFragment extends Fragment implements LoadMoviesFromApi.
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(),"Yo",Toast.LENGTH_SHORT).show();
 
                 Bundle bundle = new Bundle();
                 Movie movie = movies[position];

@@ -137,9 +137,8 @@ public class DetailActivityFragment extends Fragment implements FetchJsonTrailer
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String currentPref = preferences.getString(getString(R.string.pref_sort_by_key), "");
                 if(currentPref.contentEquals(getString(R.string.favorites))){
-                    if(movie != null){
-                        poster.setImageBitmap(MovieModel.getBitmap(movie.getBytesArray()));
-                    }
+                    MovieModel movieModel = new MovieModel(getContext());
+                    loadMovieFromDB(movieModel.getMovie(movie.getId()));
                 } else {
                     Picasso.with(getContext())
                             .load(movie.getImageUri())
