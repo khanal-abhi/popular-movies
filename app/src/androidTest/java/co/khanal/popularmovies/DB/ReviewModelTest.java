@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import junit.framework.TestCase;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +89,15 @@ public class ReviewModelTest extends AndroidTestCase {
         reviewModel.addReviews(reviews);
         Thread.sleep(2000);
         assertEquals(reviews.size(), reviewModel.getReviews().size());
+    }
+
+    public void testUniqueId() throws Exception{
+        reviewModel.addReview(review1);
+        try {
+            reviewModel.addReview(review1);
+            fail();
+        } catch (SQLException e){
+            assertTrue(true);
+        }
     }
 }

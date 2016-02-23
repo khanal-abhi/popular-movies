@@ -2,6 +2,9 @@ package co.khanal.popularmovies.DB;
 
 import android.test.AndroidTestCase;
 
+import org.junit.Test;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,6 +93,16 @@ public class MovieModelTest extends AndroidTestCase {
         movieModel.addMovies(movies);
         Thread.sleep(2000);
         assertEquals(movies.size(), movieModel.getMovies().size());
+    }
+
+    public void testUniqueId() throws Exception {
+        movieModel.addMovie(movie1);
+        try {
+            movieModel.addMovie(movie1);
+            fail();
+        } catch (SQLException e){
+            assertTrue(true);
+        }
     }
 
 }

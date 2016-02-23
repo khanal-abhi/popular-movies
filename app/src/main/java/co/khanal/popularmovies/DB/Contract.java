@@ -29,7 +29,7 @@ public class Contract {
         );
 
         public static final String DROP_TABLE_STATEMENT = String.format(
-                "DROP TABLE IF EXITS %s;",
+                "DROP TABLE IF EXISTS %s;",
                 TABLE_NAME
         );
 
@@ -45,7 +45,7 @@ public class Contract {
         public static final String MOVIE_ID = "movie_id";
 
         public static final String CREATE_TABLE_STATEMENT = String.format(
-                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY ," +
+                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY NOT NULL UNIQUE," +
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s INTEGER," +
@@ -54,7 +54,7 @@ public class Contract {
         );
 
         public static final String DROP_TABLE_STATEMENT = String.format(
-                "DROP TABLE IF EXITS %s;",
+                "DROP TABLE IF EXISTS %s;",
                 TABLE_NAME
         );
     }
@@ -69,7 +69,7 @@ public class Contract {
         public static final String MOVIE_ID = "movie_id";
 
         public static final String CREATE_TABLE_STATEMENT = String.format(
-                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY ," +
+                "CREATE TABLE IF NOT EXISTS %s ( %s TEXT PRIMARY KEY NOT NULL UNIQUE," +
                         "%s TEXT," +
                         "%s TEXT," +
                         "%s TEXT," +
@@ -79,7 +79,7 @@ public class Contract {
         );
 
         public static final String DROP_TABLE_STATEMENT = String.format(
-                "DROP TABLE IF EXITS %s;",
+                "DROP TABLE IF EXISTS %s;",
                 TABLE_NAME
         );
     }

@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import junit.framework.TestCase;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,5 +87,15 @@ public class TrailerModelTest extends AndroidTestCase {
         trailerModel.addTrailers(trailers);
         Thread.sleep(2000);
         assertEquals(trailers.size(), trailerModel.getTrailers().size());
+    }
+
+    public void testUniqueId() throws Exception{
+        trailerModel.addTrailer(trailer1);
+        try {
+            trailerModel.addTrailer(trailer1);
+            fail();
+        } catch (SQLException e){
+            assertTrue(true);
+        }
     }
 }

@@ -16,12 +16,16 @@ public class PopularMoviesDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(Contract.Movies.CREATE_TABLE_STATEMENT + Contract.Reviews.CREATE_TABLE_STATEMENT + Contract.Trailers.CREATE_TABLE_STATEMENT);
+        db.execSQL(Contract.Movies.CREATE_TABLE_STATEMENT);
+        db.execSQL(Contract.Reviews.CREATE_TABLE_STATEMENT);
+        db.execSQL(Contract.Trailers.CREATE_TABLE_STATEMENT);
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(Contract.Movies.DROP_TABLE_STATEMENT + Contract.Reviews.CREATE_TABLE_STATEMENT + Contract.Trailers.DROP_TABLE_STATEMENT);
+        db.execSQL(Contract.Movies.DROP_TABLE_STATEMENT);
+        db.execSQL(Contract.Reviews.DROP_TABLE_STATEMENT);
+        db.execSQL(Contract.Trailers.DROP_TABLE_STATEMENT);
     }
 }
